@@ -1,0 +1,30 @@
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración del entorno (como credenciales locales)
+config/database.php
+
+# Archivos temporales o de caché
+*.log
+*.tmp
+*.cache
+
+# Archivos de subida temporales
+uploads/
+tmp/
+cache/
+
+# Directorios del IDE/editor
+.vscode/
+.idea/
+
+# Archivos del entorno local (por ejemplo, XAMPP)
+*.sql
+*.env
+
+# Composer (si en algún momento lo usás)
+vendor/
+
+# Node.js (por si algún día agregás JS con npm)
+node_modules/

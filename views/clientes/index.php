@@ -1,0 +1,80 @@
+ <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="fas fa-users"></i>Lista de Clientes</h1>
+                    <a href="?route=clientes_create" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nuevo Cliente
+                    </a>
+                </div>
+
+                <?php if (isset($_GET['success'])): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle"></i> <?= htmlspecialchars($_GET['success']) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (isset($_GET['error'])): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($_GET['error']) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <?php endif; ?>
+
+                <div class="card shadow">
+                    <div class="card-body">
+                        <?php if ($clientes && $clientes->num_rows > 0): ?>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th><i class="fas fa-hashtag"></i> ID</th>
+                                            <th><i class="fas fa-user"></i> Cliente</th>
+                                            <th><i class="fas fa-envelope"></i> Email</th>
+                                            <th><i class="fas fa-phone"></i> Telefono</th>
+                                            <th><i class="fas fa-cogs"></i> Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php while ($cliente = $clientes->fetch_assoc()): ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($cliente['id_cliente']) ?></td>
+                                                <td><?= htmlspecialchars($cliente['cliente']) ?></td>
+                                                <td><?= htmlspecialchars($cliente['email']) ?></td>
+                                                <td><?= htmlspecialchars($cliente['telefono']) ?></td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <a href="?route=clientes_edit&id_cliente=<?= $cliente['id_cliente'] ?>" 
+                                                           class="btn btn-sm btn-outline-primary" 
+                                                           title="Editar">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="?route=clientes_delete&id_cliente=<?= $cliente['id_cliente'] ?>" 
+                                                           class="btn btn-sm btn-outline-danger" 
+                                                           title="Eliminar"
+                                                           onclick="return confirm('¿Estás seguro de que deseas eliminar este cliente?')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endwhile; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php else: ?>
+                            <div class="text-center py-5">
+                                <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                                <h4 class="text-muted">No hay clientes registrados</h4>
+                                <p class="text-muted">Comienza agregando tu primer cliente</p>
+                                <a href="?route=clientes_create" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Crear Primer Cliente
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
