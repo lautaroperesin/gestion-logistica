@@ -28,7 +28,7 @@ require_once __DIR__ . '/../layouts/header.php';
                             <th>Fecha Vencimiento</th>
                             <th>Estado</th>
                             <th>Subtotal</th>
-                            <th>IVA</th>
+                            <th>IVA (%)</th>
                             <th>Total</th>
                             <th>Acciones</th>
                         </tr>
@@ -50,7 +50,7 @@ require_once __DIR__ . '/../layouts/header.php';
                                     ?>
                                 </td>
                                 <td>$<?= number_format($factura['subtotal'], 2) ?></td>
-                                <td>$<?= number_format($factura['iva'], 2) ?></td>
+                                <td>%<?= number_format($factura['iva'], 2) ?></td>
                                 <td>$<?= number_format($factura['total'], 2) ?></td>
                                 <td>
                                     <div class="btn-group">
