@@ -5,6 +5,7 @@ require_once __DIR__ . '/../controllers/ConductorController.php';
 require_once __DIR__ . '/../controllers/VehiculoController.php';
 require_once __DIR__ . '/../controllers/TipoCargaController.php';
 require_once __DIR__ . '/../controllers/DashboardController.php';
+require_once __DIR__ . '/../controllers/EnvioController.php';
 
 // Función helper para detectar la página activa
 function isCurrentRoute($route) {
@@ -124,6 +125,32 @@ switch ($route) {
     case 'tipos_carga_delete':
         $tipoCargaController = new TipoCargaController();
         $tipoCargaController->delete();
+        break;
+
+    // Rutas de Envíos
+    case 'envios':
+        $envioController = new EnvioController();
+        $envioController->index();
+        break;
+    case 'envios_create':
+        $envioController = new EnvioController();
+        $envioController->create();
+        break;
+    case 'envios_store':
+        $envioController = new EnvioController();
+        $envioController->store();
+        break;
+    case 'envios_edit':
+        $envioController = new EnvioController();
+        $envioController->edit();
+        break;
+    case 'envios_update':
+        $envioController = new EnvioController();
+        $envioController->update();
+        break;
+    case 'envios_delete':
+        $envioController = new EnvioController();
+        $envioController->delete();
         break;
 
     // Ruta por defecto

@@ -44,6 +44,11 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link <?php echo isCurrentRoute('envios') ? 'active' : ''; ?>" href="?route=envios">
+                                <i class="fas fa-boxes"></i> Envíos
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link <?php echo isCurrentRoute('clientes') ? 'active' : ''; ?>" href="?route=clientes">
                                 <i class="fas fa-users"></i> Clientes
                             </a>
