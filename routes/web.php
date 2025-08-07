@@ -7,6 +7,7 @@ require_once __DIR__ . '/../controllers/TipoCargaController.php';
 require_once __DIR__ . '/../controllers/DashboardController.php';
 require_once __DIR__ . '/../controllers/EnvioController.php';
 require_once __DIR__ . '/../controllers/UbicacionController.php';
+require_once __DIR__ . '/../controllers/FacturaController.php';
 
 // Función helper para detectar la página activa
 function isCurrentRoute($route) {
@@ -186,6 +187,44 @@ switch ($route) {
     case 'getLocalidadesByProvincia':
         $ubicacionController = new UbicacionController();
         $ubicacionController->getLocalidadesByProvincia();
+        break;
+
+    // Rutas de Facturas
+    case 'facturas':
+        $facturaController = new FacturaController();
+        $facturaController->index();
+        break;
+    case 'facturas_create':
+        $facturaController = new FacturaController();
+        $facturaController->create();
+        break;
+    case 'facturas_store':
+        $facturaController = new FacturaController();
+        $facturaController->store();
+        break;
+    case 'facturas_edit':
+        $facturaController = new FacturaController();
+        $facturaController->edit();
+        break;
+    case 'facturas_update':
+        $facturaController = new FacturaController();
+        $facturaController->update();
+        break;
+    case 'facturas_delete':
+        $facturaController = new FacturaController();
+        $facturaController->delete();
+        break;
+    case 'facturas_by_envio':
+        $facturaController = new FacturaController();
+        $facturaController->getByEnvio();
+        break;
+    case 'facturas_by_cliente':
+        $facturaController = new FacturaController();
+        $facturaController->getByCliente();
+        break;
+    case 'facturas_by_estado':
+        $facturaController = new FacturaController();
+        $facturaController->getByEstado();
         break;
 
     // Ruta por defecto

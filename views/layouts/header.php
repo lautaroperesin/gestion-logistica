@@ -69,6 +69,11 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link <?php echo isCurrentRoute('facturas') ? 'active' : ''; ?>" href="?route=facturas">
+                                <i class="fas fa-file-invoice-dollar"></i> Facturas
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link <?php echo isCurrentRoute('tipos_carga') ? 'active' : ''; ?>" href="?route=tipos_carga">
                                 <i class="fas fa-boxes"></i> Tipos de Carga
                             </a>
