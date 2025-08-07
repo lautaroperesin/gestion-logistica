@@ -64,6 +64,11 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link <?php echo isCurrentRoute('ubicaciones') ? 'active' : ''; ?>" href="?route=ubicaciones">
+                                <i class="fas fa-map-marker-alt"></i> Ubicaciones
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link <?php echo isCurrentRoute('tipos_carga') ? 'active' : ''; ?>" href="?route=tipos_carga">
                                 <i class="fas fa-boxes"></i> Tipos de Carga
                             </a>

@@ -6,6 +6,7 @@ require_once __DIR__ . '/../controllers/VehiculoController.php';
 require_once __DIR__ . '/../controllers/TipoCargaController.php';
 require_once __DIR__ . '/../controllers/DashboardController.php';
 require_once __DIR__ . '/../controllers/EnvioController.php';
+require_once __DIR__ . '/../controllers/UbicacionController.php';
 
 // Función helper para detectar la página activa
 function isCurrentRoute($route) {
@@ -151,6 +152,40 @@ switch ($route) {
     case 'envios_delete':
         $envioController = new EnvioController();
         $envioController->delete();
+        break;
+
+    // Rutas de Ubicaciones
+    case 'ubicaciones':
+        $ubicacionController = new UbicacionController();
+        $ubicacionController->index();
+        break;
+    case 'ubicaciones_create':
+        $ubicacionController = new UbicacionController();
+        $ubicacionController->create();
+        break;
+    case 'ubicaciones_store':
+        $ubicacionController = new UbicacionController();
+        $ubicacionController->store();
+        break;
+    case 'ubicaciones_edit':
+        $ubicacionController = new UbicacionController();
+        $ubicacionController->edit();
+        break;
+    case 'ubicaciones_update':
+        $ubicacionController = new UbicacionController();
+        $ubicacionController->update();
+        break;
+    case 'ubicaciones_delete':
+        $ubicacionController = new UbicacionController();
+        $ubicacionController->delete();
+        break;
+    case 'getProvinciasByPais':
+        $ubicacionController = new UbicacionController();
+        $ubicacionController->getProvinciasByPais();
+        break;
+    case 'getLocalidadesByProvincia':
+        $ubicacionController = new UbicacionController();
+        $ubicacionController->getLocalidadesByProvincia();
         break;
 
     // Ruta por defecto
