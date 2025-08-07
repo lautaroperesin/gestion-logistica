@@ -49,6 +49,16 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link <?php echo isCurrentRoute('facturas') ? 'active' : ''; ?>" href="?route=facturas">
+                                <i class="fas fa-file-invoice-dollar"></i> Facturas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo isCurrentRoute('movimientos_caja') ? 'active' : ''; ?>" href="?route=movimientos_caja">
+                                <i class="fas fa-money-bill-wave"></i> Movimientos de Caja
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link <?php echo isCurrentRoute('clientes') ? 'active' : ''; ?>" href="?route=clientes">
                                 <i class="fas fa-users"></i> Clientes
                             </a>
@@ -69,8 +79,8 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo isCurrentRoute('facturas') ? 'active' : ''; ?>" href="?route=facturas">
-                                <i class="fas fa-file-invoice-dollar"></i> Facturas
+                            <a class="nav-link <?php echo isCurrentRoute('metodos_pago') ? 'active' : ''; ?>" href="?route=metodos_pago">
+                                <i class="fas fa-credit-card"></i> Métodos de Pago
                             </a>
                         </li>
                         <li class="nav-item">

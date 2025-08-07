@@ -8,6 +8,8 @@ require_once __DIR__ . '/../controllers/DashboardController.php';
 require_once __DIR__ . '/../controllers/EnvioController.php';
 require_once __DIR__ . '/../controllers/UbicacionController.php';
 require_once __DIR__ . '/../controllers/FacturaController.php';
+require_once __DIR__ . '/../controllers/MetodoPagoController.php';
+require_once __DIR__ . '/../controllers/MovimientoCajaController.php';
 
 // Función helper para detectar la página activa
 function isCurrentRoute($route) {
@@ -225,6 +227,62 @@ switch ($route) {
     case 'facturas_by_estado':
         $facturaController = new FacturaController();
         $facturaController->getByEstado();
+        break;
+
+    // Rutas de Métodos de Pago
+    case 'metodos_pago':
+        $metodoPagoController = new MetodoPagoController();
+        $metodoPagoController->index();
+        break;
+    case 'metodos_pago_create':
+        $metodoPagoController = new MetodoPagoController();
+        $metodoPagoController->create();
+        break;
+    case 'metodos_pago_store':
+        $metodoPagoController = new MetodoPagoController();
+        $metodoPagoController->store();
+        break;
+    case 'metodos_pago_edit':
+        $metodoPagoController = new MetodoPagoController();
+        $metodoPagoController->edit();
+        break;
+    case 'metodos_pago_update':
+        $metodoPagoController = new MetodoPagoController();
+        $metodoPagoController->update();
+        break;
+    case 'metodos_pago_delete':
+        $metodoPagoController = new MetodoPagoController();
+        $metodoPagoController->delete();
+        break;
+
+    // Rutas de Movimientos de Caja
+    case 'movimientos_caja':
+        $movimientoCajaController = new MovimientoCajaController();
+        $movimientoCajaController->index();
+        break;
+    case 'movimientos_caja_create':
+        $movimientoCajaController = new MovimientoCajaController();
+        $movimientoCajaController->create();
+        break;
+    case 'movimientos_caja_store':
+        $movimientoCajaController = new MovimientoCajaController();
+        $movimientoCajaController->store();
+        break;
+    case 'movimientos_caja_edit':
+        $movimientoCajaController = new MovimientoCajaController();
+        $movimientoCajaController->edit();
+        break;
+    case 'movimientos_caja_update':
+        $movimientoCajaController = new MovimientoCajaController();
+        $movimientoCajaController->update();
+        break;
+    case 'movimientos_caja_delete':
+        $movimientoCajaController = new MovimientoCajaController();
+        $movimientoCajaController->delete();
+        break;
+    case 'movimientos_caja_by_factura':
+        $movimientoCajaController = new MovimientoCajaController();
+        $movimientoCajaController->getByFactura();
         break;
 
     // Ruta por defecto
