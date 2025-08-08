@@ -7,7 +7,7 @@ class TipoCarga {
     }
 
     public function obtenerTodos() {
-        $stmt = $this->conn->prepare("SELECT * FROM tipos_carga ORDER BY carga");
+        $stmt = $this->conn->prepare("SELECT * FROM tipos_carga ORDER BY id_tipo_carga ASC");
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }

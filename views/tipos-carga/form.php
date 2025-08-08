@@ -75,12 +75,5 @@ $mode = $isEdit ? 'edit' : 'create';
             document.getElementById('carga').focus();
             return;
         }
-        
-        <?php if ($isEdit): ?>
-        // Confirmación antes de actualizar
-        if (!confirm('¿Está seguro de que desea actualizar este tipo de carga?')) {
-            e.preventDefault();
-        }
-        <?php endif; ?>
     });
 </script>
