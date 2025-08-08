@@ -10,6 +10,7 @@ require_once __DIR__ . '/../controllers/UbicacionController.php';
 require_once __DIR__ . '/../controllers/FacturaController.php';
 require_once __DIR__ . '/../controllers/MetodoPagoController.php';
 require_once __DIR__ . '/../controllers/MovimientoCajaController.php';
+require_once __DIR__ . '/../controllers/UsuarioController.php';
 
 // Función helper para detectar la página activa
 function isCurrentRoute($route) {
@@ -20,6 +21,22 @@ function isCurrentRoute($route) {
 $route = $_GET['route'] ?? 'home';
 
 switch ($route) {
+    // Rutas de usuario    
+    case 'login':
+        $usuarioController = new UsuarioController();
+        $usuarioController->login();
+        break;
+
+    case 'logout':
+        $usuarioController = new UsuarioController();
+        $usuarioController->logout();
+        break;
+
+    case 'registro':
+        $usuarioController = new UsuarioController();
+        $usuarioController->registro();
+        break;
+
     // Rutas del Dashboard
     case 'home':
     case 'dashboard':
