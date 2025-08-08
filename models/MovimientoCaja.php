@@ -43,13 +43,13 @@ class MovimientoCaja {
 
     public function crear($id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones) {
         $stmt = $this->conn->prepare("INSERT INTO movimientos_caja (id_factura, id_metodo_pago, fecha_pago, monto, observaciones) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("iids", $id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones);
+        $stmt->bind_param("iisds", $id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones);
         return $stmt->execute();
     }
 
     public function editar($id_movimiento, $id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones) {
         $stmt = $this->conn->prepare("UPDATE movimientos_caja SET id_factura = ?, id_metodo_pago = ?, fecha_pago = ?, monto = ?, observaciones = ? WHERE id_movimiento = ?");
-        $stmt->bind_param("iidsi", $id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones, $id_movimiento);
+        $stmt->bind_param("iidsdi", $id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones, $id_movimiento);
         return $stmt->execute();
     }
 

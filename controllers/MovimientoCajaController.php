@@ -35,7 +35,7 @@ class MovimientoCajaController {
             $observaciones = $_POST['observaciones'] ?? '';
 
             if ($this->movimientoCajaModel->crear($id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones)) {
-                header('Location: ?route=movimientos_caja');
+                header('Location: ?route=facturas');
                 exit;
             }
         }

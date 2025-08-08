@@ -40,10 +40,26 @@ require_once __DIR__ . '/../layouts/header.php';
                                 <?php foreach ($envios as $envio): ?>
                                     <option value="<?= $envio['id_envio'] ?>"
                                             <?php echo isset($factura) && $factura['id_envio'] == $envio['id_envio'] ? 'selected' : ''; ?>>
-                                        Envío #<?= $envio['numero_seguimiento'] ?>
+                                        <?= htmlspecialchars($envio['numero_seguimiento']) ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select class="form-select" id="estado" name="estado" required>
+                                <option value="1" <?php echo isset($factura) && $factura['estado'] == 1 ? 'selected' : ''; ?>>Emitida</option>
+                                <option value="2" <?php echo isset($factura) && $factura['estado'] == 2 ? 'selected' : ''; ?>>Parcialmente Pagada</option>
+                                <option value="3" <?php echo isset($factura) && $factura['estado'] == 3 ? 'selected' : ''; ?>>Pagada</option>
+                                <option value="4" <?php echo isset($factura) && $factura['estado'] == 4 ? 'selected' : ''; ?>>Vencida</option>
+                                <option value="5" <?php echo isset($factura) && $factura['estado'] == 5 ? 'selected' : ''; ?>>Anulada</option>
+                            </select>
+                            <div class="form-text">
+                                <small>
+                                    <strong>Nota:</strong> El estado se actualizará automáticamente basado en los pagos realizados.
+                                </small>
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -75,15 +91,6 @@ require_once __DIR__ . '/../layouts/header.php';
                             <label for="total" class="form-label">Total</label>
                             <input type="number" step="0.01" class="form-control" id="total" name="total" 
                                    value="<?php echo isset($factura) ? $factura['total'] : ''; ?>" required readonly>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="estado" class="form-label">Estado</label>
-                            <select class="form-select" id="estado" name="estado" required>
-                                <option value="1" <?php echo isset($factura) && $factura['estado'] == 1 ? 'selected' : ''; ?>>Pendiente</option>
-                                <option value="2" <?php echo isset($factura) && $factura['estado'] == 2 ? 'selected' : ''; ?>>Pagada</option>
-                                <option value="3" <?php echo isset($factura) && $factura['estado'] == 3 ? 'selected' : ''; ?>>Vencida</option>
-                            </select>
                         </div>
 
                         <div class="d-flex justify-content-end">

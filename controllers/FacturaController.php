@@ -93,6 +93,22 @@ class FacturaController {
         }
     }
 
+    public function pago() {
+        $id_factura = $_GET['id_factura'] ?? null;
+        if (!$id_factura) {
+            header('Location: ?route=facturas');
+            exit;
+        }
+
+        $factura = $this->facturaModel->obtenerPorId($id_factura);
+        if (!$factura) {
+            header('Location: ?route=facturas');
+            exit;
+        }
+
+        require __DIR__ . '/../views/facturas/pago.php';
+    }
+
     public function getByEnvio($id_envio) {
         $facturas = $this->facturaModel->obtenerPorEnvio($id_envio);
         include __DIR__ . '/../views/facturas/index.php';

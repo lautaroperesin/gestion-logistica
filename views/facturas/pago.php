@@ -11,7 +11,7 @@ if (!$id_factura) {
     exit;
 }
 
-// Obtener la factura
+// Obtener la factura (incluye saldo pendiente)
 $db = new Database();
 $factura = (new Factura($db->getConnection()))->obtenerPorId($id_factura);
 
@@ -21,14 +21,8 @@ if (!$factura) {
     exit;
 }
 
-// Calcular saldo pendiente
-$movimientoCajaModel = new MovimientoCaja($db->getConnection());
-$movimientos = $movimientoCajaModel->obtenerPorFactura($id_factura);
-$total_pagado = 0;
-foreach ($movimientos as $mov) {
-    $total_pagado += floatval($mov['monto']);
-}
-$saldo_pendiente = floatval($factura['total']) - $total_pagado;
+// El saldo pendiente ya viene calculado en $factura['saldo_pendiente']
+$saldo_pendiente = $factura['saldo_pendiente'];
 ?>
 
 <div class="container mt-4">
@@ -72,6 +66,7 @@ $saldo_pendiente = floatval($factura['total']) - $total_pagado;
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Saldo Pendiente</label>
+                                    <input type="hidden" id="saldo_pendiente" value="<?= $saldo_pendiente ?>">
                                     <input type="text" class="form-control" value="$<?= number_format($saldo_pendiente, 2) ?>" readonly>
                                 </div>
                             </div>
@@ -93,25 +88,25 @@ $saldo_pendiente = floatval($factura['total']) - $total_pagado;
                         </div>
 
                         <!-- Historial de Pagos -->
-                        <?php if (!empty($movimientos)): ?>
+                        <?php if (!empty($factura['movimientos'])): ?>
                             <div class="row mb-3">
                                 <div class="col-12">
                                     <div class="card">
                                         <div class="card-header bg-light">
-                                            <h6 class="mb-0">Historial de Pagos</h6>
+                                            <h5 class="mb-0">Historial de Pagos</h5>
                                         </div>
                                         <div class="card-body">
-                                            <table class="table table-sm table-hover">
+                                            <table class="table table-sm">
                                                 <thead>
                                                     <tr>
                                                         <th>Fecha</th>
-                                                        <th>Método</th>
+                                                        <th>Método de Pago</th>
                                                         <th>Monto</th>
                                                         <th>Observaciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <?php foreach ($movimientos as $mov): ?>
+                                                    <?php foreach ($factura['movimientos'] as $mov): ?>
                                                         <tr>
                                                             <td><?= date('d/m/Y H:i', strtotime($mov['fecha_pago'])) ?></td>
                                                             <td><?= htmlspecialchars($mov['metodo_pago']) ?></td>
@@ -172,20 +167,43 @@ $saldo_pendiente = floatval($factura['total']) - $total_pagado;
 </div>
 
 <script>
+// Función para formatear números con dos decimales
+function formatNumber(num) {
+    return parseFloat(num).toFixed(2);
+}
+
+// Función para obtener el saldo pendiente desde el hidden input
+function getSaldoPendiente() {
+    const saldoElement = document.getElementById('saldo_pendiente');
+    if (!saldoElement) return 0;
+    return parseFloat(saldoElement.value) || 0;
+}
+
+// Función para los botones rápidos
 function setMonto(porcentaje) {
-    const saldo = parseFloat(document.querySelector('.saldo-pendiente').value.replace('$', ''));
-    const monto = (saldo * porcentaje) / 100;
-    const input = document.getElementById('monto_input');
-    input.value = monto.toFixed(2);
-    input.dispatchEvent(new Event('change'));
+    const saldo = getSaldoPendiente();
+    if (isNaN(saldo)) return;
+    
+    // Calcular el monto basado en el porcentaje
+    const monto = formatNumber(saldo * (porcentaje / 100));
+    
+    // Obtener el input del monto
+    const montoInput = document.getElementById('monto_input');
+    if (montoInput) {
+        montoInput.value = monto;
+        // Asegurar que el valor no supere el saldo pendiente
+        if (parseFloat(monto) > saldo) {
+            montoInput.value = formatNumber(saldo);
+        }
+    }
 }
 
 // Formatear el monto al cargar la página
 window.addEventListener('load', function() {
-    const input = document.getElementById('monto_input');
-    if (input) {
-        const value = parseFloat(input.value);
-        input.value = value.toFixed(2);
+    const montoInput = document.getElementById('monto_input');
+    if (montoInput) {
+        const saldo = getSaldoPendiente();
+        montoInput.value = formatNumber(saldo);
     }
 });
 

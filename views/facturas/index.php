@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../helpers/factura_helper.php';
 require_once __DIR__ . '/../layouts/header.php';
 ?>
 
@@ -40,13 +41,19 @@ require_once __DIR__ . '/../layouts/header.php';
                                 <td><?= $factura['numero_factura'] ?></td>
                                 <td><?= $factura['numero_seguimiento'] ?></td>
                                 <td><?= $factura['cliente'] ?></td>
-                                <td><?= date('d/m/Y H:i', strtotime($factura['fecha_emision'])) ?></td>
-                                <td><?= $factura['fecha_vencimiento'] ? date('d/m/Y', strtotime($factura['fecha_vencimiento'])) : '' ?></td>
+                                <td><?= date('d/m/Y', strtotime($factura['fecha_emision'])) ?></td>
+                                <td><?= $factura['fecha_vencimiento'] ? date('d/m/Y', strtotime($factura['fecha_vencimiento'])) : '-' ?></td>
                                 <td>
                                     <?php
-                                    $estados = ['Pendiente', 'Pagada', 'Vencida'];
-                                    $estado = $factura['estado'] - 1;
-                                    echo $estados[$estado] ?? 'Desconocido';
+                                    // Obtener estado basado en el total_pagado pre-calculado
+                                    $estado = calcularEstadoFactura(
+                                        $factura['total'],
+                                        $factura['total_pagado'],
+                                        $factura['fecha_vencimiento']
+                                    );
+                                    
+                                    // Mostrar badge con estado
+                                    echo getBadgeEstadoFactura($estado, $factura['total'], $factura['total_pagado']);
                                     ?>
                                 </td>
                                 <td>$<?= number_format($factura['subtotal'], 2) ?></td>
@@ -57,9 +64,12 @@ require_once __DIR__ . '/../layouts/header.php';
                                         <a href="?route=facturas_edit&id_factura=<?= $factura['id_factura'] ?>" class="btn btn-sm btn-primary">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="?route=facturas_delete&id_factura=<?= $factura['id_factura'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta factura?')">
-                                            <i class="fas fa-trash"></i>
+                                        <a href="?route=facturas_pago&id_factura=<?= $factura['id_factura'] ?>" class="btn btn-sm btn-success">
+                                            <i class="fas fa-money-bill-wave"></i>
                                         </a>
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="confirmarEliminacion('facturas', <?= $factura['id_factura'] ?>)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>

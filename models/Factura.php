@@ -7,12 +7,21 @@ class Factura {
     }
 
     public function obtenerTodos() {
-        $stmt = $this->conn->prepare("SELECT f.*, e.numero_seguimiento, c.cliente 
-                                     FROM facturas f 
-                                     JOIN envios e ON f.id_envio = e.id_envio 
-                                     JOIN clientes c ON f.id_cliente = c.id_cliente 
-                                     WHERE f.deleted = 0 
-                                     ORDER BY f.fecha_emision DESC");
+        $sql = "
+            SELECT 
+                f.*, 
+                e.numero_seguimiento, 
+                c.cliente,
+                COALESCE(SUM(mc.monto), 0) as total_pagado
+            FROM facturas f
+            JOIN envios e ON f.id_envio = e.id_envio
+            JOIN clientes c ON f.id_cliente = c.id_cliente
+            LEFT JOIN movimientos_caja mc ON f.id_factura = mc.id_factura
+            WHERE f.deleted = 0
+            GROUP BY f.id_factura
+            ORDER BY f.fecha_emision DESC
+        ";
+        $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
@@ -26,7 +35,25 @@ class Factura {
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
-        return $result->fetch_assoc();
+        $factura = $result->fetch_assoc();
+        
+        if ($factura) {
+            // Obtener movimientos y calcular saldo pendiente
+            $movimientoCajaModel = new MovimientoCaja($this->conn);
+            $movimientos = $movimientoCajaModel->obtenerPorFactura($id);
+            
+            // Calcular saldo pendiente
+            $total_pagado = 0;
+            foreach ($movimientos as $mov) {
+                $total_pagado += floatval($mov['monto']);
+            }
+            $factura['saldo_pendiente'] = floatval($factura['total']) - $total_pagado;
+            
+            // Agregar los movimientos a la factura
+            $factura['movimientos'] = $movimientos;
+        }
+        
+        return $factura;
     }
 
     public function crear($id_envio, $numero_factura, $fecha_emision, $fecha_vencimiento, $id_cliente, $iva, $subtotal, $total, $estado) {
