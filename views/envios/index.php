@@ -29,17 +29,20 @@ require_once __DIR__ . '/../layouts/header.php';
                         <?php foreach ($envios as $envio): ?>
                         <tr>
                             <td><?= htmlspecialchars($envio['numero_seguimiento']) ?></td>
-                            <td><?= htmlspecialchars($envio['id_origen']) ?></td>
-                            <td><?= htmlspecialchars($envio['id_destino']) ?></td>
+                            <td><?= htmlspecialchars($envio['origen']) ?></td>
+                            <td><?= htmlspecialchars($envio['destino']) ?></td>
                             <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($envio['fecha_salida']))) ?></td>
-                            <td><?= htmlspecialchars($envio['id_estado_envio']) ?></td>
+                            <td><?= htmlspecialchars($envio['estado']) ?></td>
                             <td><?= number_format($envio['peso_kg'], 2) ?></td>
                             <td><?= number_format($envio['volumen_m3'], 2) ?></td>
                             <td>$<?= number_format($envio['costo_total'], 2) ?></td>
                             <td>
                                 <div class="btn-group">
                                     <a href="?route=envios_edit&id_envio=<?= $envio['id_envio'] ?>" class="btn btn-sm btn-primary">Editar</a>
-                                    <a href="?route=envios_delete&id_envio=<?= $envio['id_envio'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar este envío?')">Eliminar</a>
+                                    <form action="?route=envios_delete" method="POST" class="d-inline">
+                                        <input type="hidden" name="id_envio" value="<?= $envio['id_envio'] ?>">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar este envío?')">Eliminar</button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>

@@ -10,7 +10,10 @@ require_once __DIR__ . '/../layouts/header.php';
                     <h2 class="mb-0"><?php echo isset($envio) ? 'Editar Envío' : 'Nuevo Envío'; ?></h2>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="<?php echo isset($envio) ? '../envios/update/' . $envio['id_envio'] : '../envios/store'; ?>">
+                    <form method="POST" action="<?php echo isset($envio) ? '?route=envios_update&id_envio=' . $envio['id_envio'] : '?route=envios_store'; ?>">
+                        <?php if (isset($envio)): ?>
+                            <input type="hidden" name="id_envio" value="<?= $envio['id_envio'] ?>">
+                        <?php endif; ?>
                         <div class="mb-3">
                             <label for="numero_seguimiento" class="form-label">Número de Seguimiento</label>
                             <input type="text" class="form-control" id="numero_seguimiento" name="numero_seguimiento" 
@@ -21,7 +24,12 @@ require_once __DIR__ . '/../layouts/header.php';
                             <label for="id_origen" class="form-label">Origen</label>
                             <select class="form-select" id="id_origen" name="id_origen" required>
                                 <option value="">Seleccione un origen</option>
-                                <!-- Aquí irían las opciones de ubicaciones cuando se implemente el módulo -->
+                                <?php foreach ($ubicaciones as $ubicacion): ?>
+                                    <option value="<?= $ubicacion['id_ubicacion'] ?>" 
+                                            <?php echo isset($envio) && $envio['id_origen'] == $ubicacion['id_ubicacion'] ? 'selected' : ''; ?>>
+                                        <?= $ubicacion['direccion'] ?>, <?= $ubicacion['localidad'] ?>, <?= $ubicacion['provincia'] ?>, <?= $ubicacion['pais'] ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
 
@@ -29,7 +37,12 @@ require_once __DIR__ . '/../layouts/header.php';
                             <label for="id_destino" class="form-label">Destino</label>
                             <select class="form-select" id="id_destino" name="id_destino" required>
                                 <option value="">Seleccione un destino</option>
-                                <!-- Aquí irían las opciones de ubicaciones cuando se implemente el módulo -->
+                                <?php foreach ($ubicaciones as $ubicacion): ?>
+                                    <option value="<?= $ubicacion['id_ubicacion'] ?>" 
+                                            <?php echo isset($envio) && $envio['id_destino'] == $ubicacion['id_ubicacion'] ? 'selected' : ''; ?>>
+                                        <?= $ubicacion['direccion'] ?>, <?= $ubicacion['localidad'] ?>, <?= $ubicacion['provincia'] ?>, <?= $ubicacion['pais'] ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
 
@@ -66,7 +79,12 @@ require_once __DIR__ . '/../layouts/header.php';
                             <label for="id_estado_envio" class="form-label">Estado</label>
                             <select class="form-select" id="id_estado_envio" name="id_estado_envio" required>
                                 <option value="">Seleccione un estado</option>
-                                <!-- Aquí irían las opciones de estados cuando se implemente el módulo -->
+                                <?php foreach ($estados as $estado): ?>
+                                    <option value="<?= $estado['id_estado_envio'] ?>" 
+                                            <?php echo isset($envio) && $envio['id_estado_envio'] == $estado['id_estado_envio'] ? 'selected' : ''; ?>>
+                                        <?= $estado['estado'] ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
 

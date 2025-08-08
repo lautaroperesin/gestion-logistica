@@ -5,6 +5,8 @@ require_once __DIR__ . '/../models/Conductor.php';
 require_once __DIR__ . '/../models/Cliente.php';
 require_once __DIR__ . '/../models/TipoCarga.php';
 require_once __DIR__ . '/../models/Vehiculo.php';
+require_once __DIR__ . '/../models/Ubicacion.php';
+require_once __DIR__ . '/../models/EstadoEnvio.php';
 
 class EnvioController {
     private $envioModel;
@@ -25,11 +27,15 @@ class EnvioController {
         $clienteModel = new Cliente($this->db->getConnection());
         $tipoCargaModel = new TipoCarga($this->db->getConnection());
         $vehiculoModel = new Vehiculo($this->db->getConnection());
+        $ubicacionModel = new Ubicacion($this->db->getConnection());
+        $estadoEnvioModel = new EstadoEnvio($this->db->getConnection());
 
         $conductores = $conductorModel->obtenerTodos();
         $clientes = $clienteModel->obtenerTodos();
         $tiposCarga = $tipoCargaModel->obtenerTodos();
         $vehiculos = $vehiculoModel->obtenerTodos();
+        $ubicaciones = $ubicacionModel->obtenerTodos();
+        $estados = $estadoEnvioModel->obtenerTodos();
 
         include __DIR__ . '/../views/layouts/header.php';
         include __DIR__ . '/../views/envios/form.php';
@@ -53,7 +59,7 @@ class EnvioController {
             $volumen_m3 = $_POST['volumen_m3'] ?? null;
 
             if ($this->envioModel->crear($id_origen, $id_destino, $fecha_salida, $id_estado_envio, $peso_kg, $id_vehiculo, $descripcion, $costo_total, $id_conductor, $id_cliente, $id_tipo_carga, $numero_seguimiento, $volumen_m3)) {
-                header('Location: ../envios');
+                header('Location: ?route=envios');
                 exit;
             }
         }
@@ -68,11 +74,15 @@ class EnvioController {
                 $clienteModel = new Cliente($this->db->getConnection());
                 $tipoCargaModel = new TipoCarga($this->db->getConnection());
                 $vehiculoModel = new Vehiculo($this->db->getConnection());
+                $ubicacionModel = new Ubicacion($this->db->getConnection());
+                $estadoEnvioModel = new EstadoEnvio($this->db->getConnection());
 
                 $conductores = $conductorModel->obtenerTodos();
                 $clientes = $clienteModel->obtenerTodos();
                 $tiposCarga = $tipoCargaModel->obtenerTodos();
                 $vehiculos = $vehiculoModel->obtenerTodos();
+                $ubicaciones = $ubicacionModel->obtenerTodos();
+                $estados = $estadoEnvioModel->obtenerTodos();
 
                 include __DIR__ . '/../views/layouts/header.php';
                 include __DIR__ . '/../views/envios/form.php';
@@ -86,8 +96,14 @@ class EnvioController {
         }
     }
 
-    public function update($id) {
+    public function update() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id_envio = $_POST['id_envio'] ?? null;
+            if (!$id_envio) {
+                header('Location: ?route=envios&error=ID de envío no encontrado');
+                exit;
+            }
+
             $id_origen = $_POST['id_origen'] ?? null;
             $id_destino = $_POST['id_destino'] ?? null;
             $fecha_salida = $_POST['fecha_salida'] ?? null;
@@ -102,16 +118,23 @@ class EnvioController {
             $numero_seguimiento = $_POST['numero_seguimiento'] ?? '';
             $volumen_m3 = $_POST['volumen_m3'] ?? null;
 
-            if ($this->envioModel->editar($id, $id_origen, $id_destino, $fecha_salida, $id_estado_envio, $peso_kg, $id_vehiculo, $descripcion, $costo_total, $id_conductor, $id_cliente, $id_tipo_carga, $numero_seguimiento, $volumen_m3)) {
-                header('Location: ../envios');
+            if ($this->envioModel->editar($id_envio, $id_origen, $id_destino, $fecha_salida, $id_estado_envio, $peso_kg, $id_vehiculo, $descripcion, $costo_total, $id_conductor, $id_cliente, $id_tipo_carga, $numero_seguimiento, $volumen_m3)) {
+                header('Location: ?route=envios');
+                exit;
+            } else {
+                header('Location: ?route=envios&error=Error al actualizar el envío');
                 exit;
             }
+        } else {
+            header('Location: ?route=envios');
+            exit;
         }
     }
 
-    public function delete($id) {
-        if ($this->envioModel->eliminar($id)) {
-            header('Location: ../envios');
+    public function delete() {
+        $id_envio = $_POST['id_envio'] ?? null;
+        if ($this->envioModel->eliminar($id_envio)) {
+            header('Location: ?route=envios');
             exit;
         }
     }
