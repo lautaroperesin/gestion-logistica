@@ -34,7 +34,17 @@ class VehiculoController {
             $estado_vehiculo = $_POST['estado_vehiculo'] ?? '';
             $rto_vencimiento = $_POST['rto_vencimiento'] ?? '';
 
-            if (!empty($patente) && !empty($marca) && !empty($modelo) && !empty($capacidad_kg) && !empty($ultima_inspeccion) && !empty($estado_vehiculo) && !empty($rto_vencimiento)) {
+            // Validar fechas
+            $fechaUltimaInspeccion = strtotime($ultima_inspeccion);
+            $fechaRtoVencimiento = strtotime($rto_vencimiento);
+            
+            if (!empty($patente) && !empty($marca) && !empty($modelo) && !empty($capacidad_kg) && 
+                $fechaUltimaInspeccion !== false && $fechaRtoVencimiento !== false &&
+                !empty($estado_vehiculo)) {
+                // Convertir fechas a formato datetime
+                $ultima_inspeccion = date('Y-m-d H:i:s', strtotime($ultima_inspeccion));
+                $rto_vencimiento = date('Y-m-d H:i:s', strtotime($rto_vencimiento));
+
                 if ($this->vehiculo->crear($patente, $marca, $modelo, $capacidad_kg, $ultima_inspeccion, $estado_vehiculo, $rto_vencimiento)) {
                     header('Location: ?route=vehiculos&success=Vehículo creado exitosamente');
                 } else {
@@ -74,7 +84,17 @@ class VehiculoController {
             $estado_vehiculo = $_POST['estado_vehiculo'] ?? '';
             $rto_vencimiento = $_POST['rto_vencimiento'] ?? '';
 
-            if ($id && !empty($patente) && !empty($marca) && !empty($modelo) && !empty($capacidad_kg) && !empty($ultima_inspeccion) && !empty($estado_vehiculo) && !empty($rto_vencimiento)) {
+            // Validar fechas
+            $fechaUltimaInspeccion = strtotime($ultima_inspeccion);
+            $fechaRtoVencimiento = strtotime($rto_vencimiento);
+            
+            if ($id && !empty($patente) && !empty($marca) && !empty($modelo) && !empty($capacidad_kg) && 
+                $fechaUltimaInspeccion !== false && $fechaRtoVencimiento !== false &&
+                !empty($estado_vehiculo) && !empty($rto_vencimiento)) {
+                // Convertir fechas a formato datetime
+                $ultima_inspeccion = date('Y-m-d H:i:s', strtotime($ultima_inspeccion));
+                $rto_vencimiento = date('Y-m-d H:i:s', strtotime($rto_vencimiento));
+
                 if ($this->vehiculo->editar($id, $patente, $marca, $modelo, $capacidad_kg, $ultima_inspeccion, $estado_vehiculo, $rto_vencimiento)) {
                     header('Location: ?route=vehiculos&success=Vehículo actualizado exitosamente');
                 } else {
@@ -102,18 +122,20 @@ class VehiculoController {
     }
 
     public function cambiarEstado() {
-        $id = $_GET['id_vehiculo'] ?? null;
-        $estado = $_GET['estado'] ?? null;
-        
-        if ($id && $estado) {
-            if ($this->vehiculo->cambiarEstado($id, $estado)) {
-                header('Location: ?route=vehiculos&success=Estado del vehículo actualizado exitosamente');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['id_vehiculo'] ?? null;
+            $estado = $_POST['estado'] ?? null;
+            
+            if ($id && $estado !== null) {
+                if ($this->vehiculo->cambiarEstado($id, $estado)) {
+                    header('Location: ?route=vehiculos&success=Estado del vehículo actualizado exitosamente');
+                } else {
+                    header('Location: ?route=vehiculos&error=Error al cambiar el estado del vehículo');
+                }
             } else {
-                header('Location: ?route=vehiculos&error=Error al cambiar el estado del vehículo');
+                header('Location: ?route=vehiculos&error=Datos inválidos para cambiar estado');
             }
-        } else {
-            header('Location: ?route=vehiculos&error=Datos inválidos para cambiar estado');
+            exit();
         }
-        exit();
     }
 }

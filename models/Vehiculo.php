@@ -8,9 +8,12 @@ class Vehiculo {
     }
 
     public function obtenerTodos() {
-        $stmt = $this->conn->prepare("SELECT * FROM vehiculos WHERE deleted = 0 ORDER BY patente");
+        $stmt = $this->conn->prepare("SELECT * FROM vehiculos WHERE deleted = 0 ORDER BY id_vehiculo ASC");
         $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $result = $stmt->get_result();
+        $vehiculos = $result->fetch_all(MYSQLI_ASSOC);
+        $result->close(); // Cerrar el resultado explícitamente
+        return $vehiculos;
     }
 
     public function obtenerPorId($id) {
@@ -23,13 +26,13 @@ class Vehiculo {
 
     public function crear($patente, $marca, $modelo, $capacidad_kg, $ultima_inspeccion, $estado_vehiculo, $rto_vencimiento) {
         $stmt = $this->conn->prepare("INSERT INTO vehiculos (patente, marca, modelo, capacidad_kg, ultima_inspeccion, estado_vehiculo, rto_vencimiento) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssdiss", $patente, $marca, $modelo, $capacidad_kg, $ultima_inspeccion, $estado_vehiculo, $rto_vencimiento);
+        $stmt->bind_param("sssdsis", $patente, $marca, $modelo, $capacidad_kg, $ultima_inspeccion, $estado_vehiculo, $rto_vencimiento);
         return $stmt->execute();
     }
 
     public function editar($id_vehiculo, $patente, $marca, $modelo, $capacidad_kg, $ultima_inspeccion, $estado_vehiculo, $rto_vencimiento) {
         $stmt = $this->conn->prepare("UPDATE vehiculos SET patente = ?, marca = ?, modelo = ?, capacidad_kg = ?, ultima_inspeccion = ?, estado_vehiculo = ?, rto_vencimiento = ? WHERE id_vehiculo = ?");
-        $stmt->bind_param("sssdissi", $patente, $marca, $modelo, $capacidad_kg, $ultima_inspeccion, $estado_vehiculo, $rto_vencimiento, $id_vehiculo);
+        $stmt->bind_param("sssdsisi", $patente, $marca, $modelo, $capacidad_kg, $ultima_inspeccion, $estado_vehiculo, $rto_vencimiento, $id_vehiculo);
         return $stmt->execute();
     }
 
@@ -46,7 +49,7 @@ class Vehiculo {
     }
 
     public function obtenerVehiculosDisponibles() {
-        $stmt = $this->conn->prepare("SELECT * FROM vehiculos WHERE deleted = 0 AND estado_vehiculo = 1 ORDER BY patente");
+        $stmt = $this->conn->prepare("SELECT * FROM vehiculos WHERE deleted = 0 AND estado_vehiculo = 1");
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }

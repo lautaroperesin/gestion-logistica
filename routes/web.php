@@ -105,6 +105,11 @@ switch ($route) {
         $vehiculoController = new VehiculoController();
         $vehiculoController->create();
         break;
+
+    case 'vehiculos_cambiar_estado':
+        $vehiculoController = new VehiculoController();
+        $vehiculoController->cambiarEstado();
+        break;
     case 'vehiculos_store':
         $vehiculoController = new VehiculoController();
         $vehiculoController->store();

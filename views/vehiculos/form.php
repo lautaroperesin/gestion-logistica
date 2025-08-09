@@ -94,22 +94,39 @@ $mode = $isEdit ? 'edit' : 'create';
                             <label for="ultima_inspeccion" class="form-label">
                                 <i class="fas fa-check-circle"></i> Última Inspección *
                             </label>
+                            <?php
+                            $fecha_inspeccion = '';
+                            if ($isEdit && !empty($vehiculo['ultima_inspeccion'])) {
+                                $fecha_inspeccion = date('Y-m-d', strtotime($vehiculo['ultima_inspeccion']));
+                            } elseif (isset($_POST['ultima_inspeccion']) && !empty($_POST['ultima_inspeccion'])) {
+                                $fecha_inspeccion = date('Y-m-d', strtotime($_POST['ultima_inspeccion']));
+                            }
+                            ?>
                             <input type="date" 
                                    class="form-control" 
                                    id="ultima_inspeccion" 
                                    name="ultima_inspeccion" 
                                    required
-                                   value="<?= $isEdit ? htmlspecialchars($vehiculo['ultima_inspeccion']) : htmlspecialchars($_POST['ultima_inspeccion'] ?? '') ?>">
+                                   value="<?= $fecha_inspeccion ?>">
                         </div>
 
                         <div class="mb-3">
                             <label for="estado_vehiculo" class="form-label">
                                 <i class="fas fa-toggle-on"></i> Estado *
                             </label>
+                            <?php
+                            $estado_actual = '';
+                            if ($isEdit && isset($vehiculo['estado_vehiculo'])) {
+                                $estado_actual = $vehiculo['estado_vehiculo'];
+                            } elseif (isset($_POST['estado_vehiculo'])) {
+                                $estado_actual = $_POST['estado_vehiculo'];
+                            }
+                            ?>
                             <select class="form-select" id="estado_vehiculo" name="estado_vehiculo" required>
-                                <option value="" disabled selected>Seleccione el estado</option>
-                                <option value="1" <?= ($isEdit && $vehiculo['estado_vehiculo'] == 1) || (!isset($vehiculo) && $_POST['estado_vehiculo'] == 1) ? 'selected' : '' ?>>Disponible</option>
-                                <option value="0" <?= ($isEdit && $vehiculo['estado_vehiculo'] == 0) || (!isset($vehiculo) && $_POST['estado_vehiculo'] == 0) ? 'selected' : '' ?>>No Disponible</option>
+                                <option value="" disabled <?= empty($estado_actual) ? 'selected' : '' ?>>Seleccione el estado</option>
+                                <option value="1" <?= $estado_actual == 1 ? 'selected' : '' ?>>Disponible</option>
+                                <option value="2" <?= $estado_actual == 2 ? 'selected' : '' ?>>En Viaje</option>
+                                <option value="3" <?= $estado_actual == 3 ? 'selected' : '' ?>>En Mantenimiento</option>
                             </select>
                         </div>
 
@@ -122,7 +139,7 @@ $mode = $isEdit ? 'edit' : 'create';
                                    id="rto_vencimiento" 
                                    name="rto_vencimiento" 
                                    required
-                                   value="<?= $isEdit ? htmlspecialchars($vehiculo['rto_vencimiento']) : htmlspecialchars($_POST['rto_vencimiento'] ?? '') ?>">
+                                   value="<?= $isEdit ? date('Y-m-d', strtotime($vehiculo['rto_vencimiento'])) : htmlspecialchars($_POST['rto_vencimiento'] ?? '') ?>">
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -199,12 +216,5 @@ $mode = $isEdit ? 'edit' : 'create';
             document.getElementById('rto_vencimiento').focus();
             return;
         }
-        
-        <?php if ($isEdit): ?>
-        // Confirmación antes de actualizar
-        if (!confirm('¿Está seguro de que desea actualizar este vehículo?')) {
-            e.preventDefault();
-        }
-        <?php endif; ?>
     });
 </script>
