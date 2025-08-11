@@ -12,8 +12,7 @@ class Ubicacion {
                                      JOIN localidades l ON u.id_localidad = l.id_localidad 
                                      JOIN provincias p ON l.id_provincia = p.id_provincia 
                                      JOIN paises pa ON p.id_pais = pa.id_pais 
-                                     WHERE u.deleted = 0 
-                                     ORDER BY u.direccion");
+                                     WHERE u.deleted = 0 ");
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
@@ -72,7 +71,7 @@ class Ubicacion {
 
     // Metodo para obtener ubicaciones por localidad y provincia, puede servirme para informes.
     public function obtenerPorLocalidad($id_localidad) {
-        $stmt = $this->conn->prepare("SELECT * FROM ubicaciones WHERE id_localidad = ? AND deleted = 0 ORDER BY direccion");
+        $stmt = $this->conn->prepare("SELECT * FROM ubicaciones WHERE id_localidad = ? AND deleted = 0");
         $stmt->bind_param("i", $id_localidad);
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -81,8 +80,7 @@ class Ubicacion {
     public function obtenerPorProvincia($id_provincia) {
         $stmt = $this->conn->prepare("SELECT u.* FROM ubicaciones u 
                                      JOIN localidades l ON u.id_localidad = l.id_localidad 
-                                     WHERE l.id_provincia = ? AND u.deleted = 0 
-                                     ORDER BY u.direccion");
+                                     WHERE l.id_provincia = ? AND u.deleted = 0");
         $stmt->bind_param("i", $id_provincia);
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
