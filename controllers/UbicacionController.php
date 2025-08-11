@@ -60,10 +60,9 @@ class UbicacionController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id_ubicacion = $_POST['id_ubicacion'] ?? null;
             $direccion = $_POST['direccion'] ?? '';
-            $id_localidad = $_POST['id_localidad'] ?? null;
             $descripcion = $_POST['descripcion'] ?? '';
 
-            if ($this->ubicacionModel->editar($id_ubicacion, $direccion, $id_localidad, $descripcion)) {
+            if ($this->ubicacionModel->editar($id_ubicacion, $direccion, $descripcion)) {
                 header('Location: ?route=ubicaciones');
                 exit;
             }

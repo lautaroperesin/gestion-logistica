@@ -36,9 +36,9 @@ class Ubicacion {
         return $stmt->execute();
     }
 
-    public function editar($id_ubicacion, $direccion, $id_localidad, $descripcion) {
-        $stmt = $this->conn->prepare("UPDATE ubicaciones SET direccion = ?, id_localidad = ?, descripcion = ? WHERE id_ubicacion = ?");
-        $stmt->bind_param("sisi", $direccion, $id_localidad, $descripcion, $id_ubicacion);
+    public function editar($id_ubicacion, $direccion, $descripcion) {
+        $stmt = $this->conn->prepare("UPDATE ubicaciones SET direccion = ?, descripcion = ? WHERE id_ubicacion = ?");
+        $stmt->bind_param("ssi", $direccion, $descripcion, $id_ubicacion);
         return $stmt->execute();
     }
 
