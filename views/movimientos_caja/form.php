@@ -43,14 +43,14 @@ require_once __DIR__ . '/../layouts/header.php';
 
                         <div class="mb-3">
                             <label for="fecha_pago" class="form-label">Fecha de Pago</label>
-                            <input type="datetime-local" class="form-control" id="fecha_pago" name="fecha_pago" 
-                                   value="<?php echo isset($movimiento) ? date('Y-m-d\TH:i', strtotime($movimiento['fecha_pago'])) : date('Y-m-d\TH:i'); ?>" required>
+                            <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" 
+                                   value="<?php echo isset($movimiento) ? date('Y-m-d', strtotime($movimiento['fecha_pago'])) : date('Y-m-d'); ?>" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="monto" class="form-label">Monto</label>
                             <input type="number" step="0.01" class="form-control" id="monto" name="monto" 
-                                   value="<?php echo isset($movimiento) ? $movimiento['monto'] : ''; ?>" required>
+                                   value="<?php echo isset($movimiento) ? number_format($movimiento['monto'], 2, '.', '') : ''; ?>" required>
                         </div>
 
                         <div class="mb-3">

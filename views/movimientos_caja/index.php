@@ -37,7 +37,7 @@ require_once __DIR__ . '/../layouts/header.php';
                                 <td><?= $movimiento['numero_factura'] ?></td>
                                 <td><?= $movimiento['cliente'] ?></td>
                                 <td><?= $movimiento['metodo_pago'] ?></td>
-                                <td><?= date('d/m/Y H:i', strtotime($movimiento['fecha_pago'])) ?></td>
+                                <td><?= date('d/m/Y', strtotime($movimiento['fecha_pago'])) ?></td>
                                 <td>$<?= number_format($movimiento['monto'], 2) ?></td>
                                 <td><?= $movimiento['observaciones'] ?></td>
                                 <td>

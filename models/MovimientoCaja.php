@@ -49,7 +49,7 @@ class MovimientoCaja {
 
     public function editar($id_movimiento, $id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones) {
         $stmt = $this->conn->prepare("UPDATE movimientos_caja SET id_factura = ?, id_metodo_pago = ?, fecha_pago = ?, monto = ?, observaciones = ? WHERE id_movimiento = ?");
-        $stmt->bind_param("iidsdi", $id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones, $id_movimiento);
+        $stmt->bind_param("iisdsi", $id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones, $id_movimiento);
         return $stmt->execute();
     }
 
