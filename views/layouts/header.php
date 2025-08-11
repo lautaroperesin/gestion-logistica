@@ -31,11 +31,48 @@
 <body>
     <div class="container-fluid">
         <div class="row">
+            <!-- Navbar superior -->
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark d-md-none">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="?route=dashboard">Sistema Logística</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdownMobile" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user me-1"></i> <?php echo $_SESSION['nombre'] ?? 'Usuario'; ?>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="?route=perfil"><i class="fas fa-user-cog me-2"></i>Mi perfil</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="?route=logout"><i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            
             <!-- Sidebar -->
             <nav class="col-md-2 d-none d-md-block sidebar">
                 <div class="sidebar-sticky">
-                    <div class="text-center py-3">
-                        <h5 class="text-white">Sistema Logística</h5>
+                    <div class="d-flex justify-content-between align-items-center p-3">
+                        <h5 class="text-white mb-0">Sistema Logística</h5>
+                        <div class="dropdown">
+                            <a href="#" class="text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle fs-5"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><span class="dropdown-item-text"><i class="fas fa-user me-2"></i><?php echo $_SESSION['nombre'] ?? 'Usuario'; ?></span></li>
+                                <li><span class="dropdown-item-text text-muted small"><?php echo $_SESSION['email'] ?? ''; ?></span></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="?route=perfil"><i class="fas fa-user-cog me-2"></i>Mi perfil</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="?route=logout"><i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión</a></li>
+                            </ul>
+                        </div>
                     </div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
