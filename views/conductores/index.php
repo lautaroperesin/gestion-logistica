@@ -46,7 +46,7 @@
                                                 <td><?= htmlspecialchars($conductor['conductor']) ?></td>
                                                 <td><?= htmlspecialchars($conductor['dni']) ?></td>
                                                 <td><?= htmlspecialchars($conductor['clase_licencia']) ?></td>
-                                                <td><?= htmlspecialchars($conductor['vencimiento_licencia']) ?></td>
+                                                <td><?= !empty($conductor['vencimiento_licencia']) ? date('d/m/Y', strtotime($conductor['vencimiento_licencia'])) : '' ?></td>
                                                 <td><?= htmlspecialchars($conductor['email']) ?></td>
                                                 <td><?= htmlspecialchars($conductor['telefono']) ?></td>
                                                 <td>

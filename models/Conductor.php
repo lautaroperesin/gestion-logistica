@@ -26,7 +26,7 @@ class Conductor {
     }
 
     public function editar($id_conductor, $nombre, $email, $telefono, $dni, $claseLicencia, $vencimientoLicencia) {
-        $stmt = $this->conn->prepare("UPDATE conductores SET conductor = ?, email = ?, telefono = ?, dni = ?, clase_licencia = ?, vencimiento_liencia = ? WHERE id_conductor = ?");
+        $stmt = $this->conn->prepare("UPDATE conductores SET conductor = ?, email = ?, telefono = ?, dni = ?, clase_licencia = ?, vencimiento_licencia = ? WHERE id_conductor = ?");
         $stmt->bind_param("ssssssi", $nombre, $email, $telefono, $dni, $claseLicencia, $vencimientoLicencia, $id_conductor);
         return $stmt->execute();
     }

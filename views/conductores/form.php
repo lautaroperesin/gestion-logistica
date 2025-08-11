@@ -91,25 +91,38 @@ $mode = $isEdit ? 'edit' : 'create';
                             <label for="clase_licencia" class="form-label">
                                 <i class="fas fa-car"></i> Clase de Licencia *
                             </label>
-                            <input type="text" 
-                                   class="form-control" 
-                                   id="clase_licencia" 
-                                   name="clase_licencia" 
-                                   required 
-                                   placeholder="Ingrese la clase de licencia"
-                                   value="<?= $isEdit ? htmlspecialchars($conductor['clase_licencia']) : htmlspecialchars($_POST['clase_licencia'] ?? '') ?>">
+                            <?php
+                            $clases_licencia = ['B1', 'B2', 'C1', 'C2', 'C3', 'E1'];
+                            $clase_actual = $isEdit ? $conductor['clase_licencia'] : ($_POST['clase_licencia'] ?? '');
+                            ?>
+                            <select class="form-select" id="clase_licencia" name="clase_licencia" required>
+                                <option value="" disabled <?= empty($clase_actual) ? 'selected' : '' ?>>Seleccione una clase de licencia</option>
+                                <?php foreach ($clases_licencia as $clase): ?>
+                                    <option value="<?= $clase ?>" <?= $clase_actual === $clase ? 'selected' : '' ?>><?= $clase ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
 
                         <div class="mb-3">
                             <label for="vencimiento_licencia" class="form-label">
                                 <i class="fas fa-calendar"></i> Vencimiento Licencia *
                             </label>
+                            <?php
+                            $fecha_vencimiento = '';
+                            if ($isEdit && !empty($conductor['vencimiento_licencia'])) {
+                                // Convertir la fecha al formato YYYY-MM-DD si no está vacía
+                                $fecha = new DateTime($conductor['vencimiento_licencia']);
+                                $fecha_vencimiento = $fecha->format('Y-m-d');
+                            } elseif (isset($_POST['vencimiento_licencia'])) {
+                                $fecha_vencimiento = htmlspecialchars($_POST['vencimiento_licencia']);
+                            }
+                            ?>
                             <input type="date" 
                                    class="form-control" 
                                    id="vencimiento_licencia" 
                                    name="vencimiento_licencia" 
                                    required
-                                   value="<?= $isEdit ? htmlspecialchars($conductor['vencimiento_licencia']) : htmlspecialchars($_POST['vencimiento_licencia'] ?? '') ?>">
+                                   value="<?= $fecha_vencimiento ?>">
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -179,12 +192,5 @@ $mode = $isEdit ? 'edit' : 'create';
             document.getElementById('email').focus();
             return;
         }
-        
-        <?php if ($isEdit): ?>
-        // Confirmación antes de actualizar
-        if (!confirm('¿Está seguro de que desea actualizar este conductor?')) {
-            e.preventDefault();
-        }
-        <?php endif; ?>
     });
 </script>
