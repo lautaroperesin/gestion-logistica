@@ -23,13 +23,13 @@ require_once __DIR__ . '/../layouts/header.php';
 
                         <div class="mb-3">
                             <label for="fecha_emision" class="form-label">Fecha de Emisión</label>
-                            <input type="datetime-local" class="form-control" id="fecha_emision" name="fecha_emision" 
-                                   value="<?php echo isset($factura) ? date('Y-m-d\TH:i', strtotime($factura['fecha_emision'])) : date('Y-m-d\TH:i'); ?>" required>
+                            <input type="date" class="form-control" id="fecha_emision" name="fecha_emision" 
+                                   value="<?php echo isset($factura) ? date('Y-m-d', strtotime($factura['fecha_emision'])) : date('Y-m-d'); ?>" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="fecha_vencimiento" class="form-label">Fecha de Vencimiento</label>
-                            <input type="date" class="form-control" id="fecha_vencimiento" name="fecha_vencimiento" 
+                            <input type="date" class="form-control" id="fecha_vencimiento" name="fecha_vencimiento"
                                    value="<?php echo isset($factura) ? date('Y-m-d', strtotime($factura['fecha_vencimiento'])) : ''; ?>">
                         </div>
 
