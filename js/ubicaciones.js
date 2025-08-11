@@ -1,15 +1,22 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM cargado');
+    
+    const paisSelect = document.getElementById('id_pais');
+    const provinciaSelect = document.getElementById('id_provincia');
+    const localidadSelect = document.getElementById('id_localidad');
+    
     // Evento para cuando cambia el país
-    document.getElementById('id_pais').addEventListener('change', function() {
-        const paisId = this.value;
-        console.log('paisId', paisId);
-        const provinciaSelect = document.getElementById('id_provincia');
-        const localidadSelect = document.getElementById('id_localidad');
-
-        // Limpiar selects de provincia y localidad
-        provinciaSelect.innerHTML = '<option value="">Seleccione una provincia</option>';
-        localidadSelect.innerHTML = '<option value="">Seleccione una localidad</option>';
+    if (paisSelect) {
+        paisSelect.addEventListener('change', function() {
+            const paisId = this.value;
+            console.log('paisId', paisId);
+            
+            // Limpiar selects de provincia y localidad
+            if (provinciaSelect) provinciaSelect.innerHTML = '<option value="">Seleccione una provincia</option>';
+            if (localidadSelect) localidadSelect.innerHTML = '<option value="">Seleccione una localidad</option>';
+            
+            // Si no hay país seleccionado, no hacemos nada más
+            if (!paisId) return;
 
         if (paisId) {
             // Cargar provincias
@@ -28,8 +35,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (Array.isArray(provincias)) {
                         provincias.forEach(provincia => {
                             const option = document.createElement('option');
-                            option.value = provincia.id_provincia;
+                            option.value = provincia.id_provincia || provincia.id; // Asegurar compatibilidad con ambos formatos
                             option.textContent = provincia.provincia;
+                            // Marcar como seleccionada si coincide con el valor guardado
+                            if (provinciaSelect.dataset.selected && provinciaSelect.dataset.selected === option.value) {
+                                option.selected = true;
+                            }
                             provinciaSelect.appendChild(option);
                         });
                     } else {
@@ -41,45 +52,54 @@ document.addEventListener('DOMContentLoaded', function() {
                     provinciaSelect.innerHTML = '<option value="">Error al cargar provincias</option>';
                 });
         }
-    });
+    })};
 
     // Evento para cuando cambia la provincia
-    document.getElementById('id_provincia').addEventListener('change', function() {
-        const provinciaId = this.value;
-        const localidadSelect = document.getElementById('id_localidad');
+    if (provinciaSelect) {
+        provinciaSelect.addEventListener('change', function() {
+            const provinciaId = this.value;
+            
+            // Limpiar select de localidad
+            if (localidadSelect) {
+                localidadSelect.innerHTML = '<option value="">Seleccione una localidad</option>';
+            }
 
-        // Limpiar select de localidad
-        localidadSelect.innerHTML = '<option value="">Seleccione una localidad</option>';
-
-        if (provinciaId) {
-            // Cargar localidades
-            fetch(`?route=getLocalidadesByProvincia&id_provincia=${provinciaId}`, {
-                method: 'GET',
-                credentials: 'same-origin'
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Error HTTP ${response.status}: ${response.statusText}`);
-                    }
-                    return response.json();
+            if (provinciaId && localidadSelect) {
+                // Cargar localidades
+                fetch(`?route=getLocalidadesByProvincia&id_provincia=${provinciaId}`, {
+                    method: 'GET',
+                    credentials: 'same-origin'
                 })
-                .then(localidades => {
-                    console.log('Localidades recibidas:', localidades);
-                    if (Array.isArray(localidades)) {
-                        localidades.forEach(localidad => {
-                            const option = document.createElement('option');
-                            option.value = localidad.id_localidad;
-                            option.textContent = localidad.localidad;
-                            localidadSelect.appendChild(option);
-                        });
-                    } else {
-                        console.error('La respuesta no es un array:', localidades);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    localidadSelect.innerHTML = '<option value="">Error al cargar localidades</option>';
-                });
-        }
-    });
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Error HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(localidades => {
+                        console.log('Localidades recibidas:', localidades);
+                        if (Array.isArray(localidades)) {
+                            localidades.forEach(localidad => {
+                                const option = document.createElement('option');
+                                option.value = localidad.id_localidad || localidad.id; // Asegurar compatibilidad con ambos formatos
+                                option.textContent = localidad.localidad;
+                                // Marcar como seleccionada si coincide con el valor guardado
+                                if (localidadSelect.dataset.selected && localidadSelect.dataset.selected === option.value) {
+                                    option.selected = true;
+                                }
+                                localidadSelect.appendChild(option);
+                            });
+                        } else {
+                            console.error('La respuesta no es un array:', localidades);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        if (localidadSelect) {
+                            localidadSelect.innerHTML = '<option value="">Error al cargar localidades</option>';
+                        }
+                    });
+            }
+        });
+    }
 });
