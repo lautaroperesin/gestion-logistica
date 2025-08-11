@@ -32,8 +32,8 @@ require_once __DIR__ . '/../layouts/header.php';
                             <td><?= htmlspecialchars($ubicacion['descripcion']) ?></td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="?route=ubicaciones_edit&id_ubicacion=<?= $ubicacion['id_ubicacion'] ?>" class="btn btn-sm btn-primary">Editar</a>
-                                    <a href="?route=ubicaciones_delete&id_ubicacion=<?= $ubicacion['id_ubicacion'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar esta ubicación?')">Eliminar</a>
+                                    <a href="?route=ubicaciones_edit&id_ubicacion=<?= $ubicacion['id_ubicacion'] ?>" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
+                                    <a href="?route=ubicaciones_delete&id_ubicacion=<?= $ubicacion['id_ubicacion'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar esta ubicación?')"><i class="fas fa-trash"></i></a>
                                 </div>
                             </td>
                         </tr>
