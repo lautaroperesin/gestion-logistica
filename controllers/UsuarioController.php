@@ -7,6 +7,9 @@ class UsuarioController {
     private $db;
 
     public function __construct() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         $this->db = new Database();
         $this->usuario = new Usuario($this->db->getConnection());
     }
@@ -23,6 +26,7 @@ class UsuarioController {
                     $_SESSION['id_usuario'] = $usuario->id;
                     $_SESSION['nombre'] = $usuario->name;
                     $_SESSION['rol_usuario'] = $usuario->role;
+                    $_SESSION['email'] = $usuario->email;
                     
                     header('Location: ?route=dashboard');
                     exit();
@@ -89,14 +93,14 @@ class UsuarioController {
         // Limpiar todas las variables de sesión
         $_SESSION = array();
         
-        // Si se desea eliminar la cookie de sesión, descomenta la siguiente línea
-        // if (ini_get("session.use_cookies")) {
-        //     $params = session_get_cookie_params();
-        //     setcookie(session_name(), '', time() - 42000,
-        //         $params["path"], $params["domain"],
-        //         $params["secure"], $params["httponly"]
-        //     );
-        // }
+        // Eliminar la cookie de sesión para mayor seguridad
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
         
         // Destruir la sesión
         session_destroy();

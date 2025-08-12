@@ -18,7 +18,17 @@ function isCurrentRoute($route) {
     return $currentRoute === $route;
 }
 
+
 $route = $_GET['route'] ?? 'home';
+
+// Verificar sesión en rutas protegidas
+$publicRoutes = ['login', 'registro', 'logout'];
+if (!in_array($route, $publicRoutes)) {
+    if (!isset($_SESSION['id_usuario'])) {
+        header('Location: ?route=login&error=Debes iniciar sesión para acceder');
+        exit();
+    }
+}
 
 switch ($route) {
     // Rutas de usuario    
