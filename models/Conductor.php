@@ -7,7 +7,7 @@ class Conductor {
     }
 
     public function obtenerTodos() {
-        $sql = "SELECT * FROM conductores WHERE deleted = 0";
+        $sql = "SELECT * FROM conductores WHERE deleted = 0 ORDER BY conductor ASC";
         return $this->conn->query($sql);
     }
 

@@ -7,7 +7,7 @@ class Cliente {
     }
 
     public function obtenerTodos() {
-        $sql = "SELECT * FROM clientes WHERE deleted = 0";
+        $sql = "SELECT * FROM clientes WHERE deleted = 0 ORDER BY cliente ASC";
         return $this->conn->query($sql);
     }
 

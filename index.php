@@ -1,5 +1,4 @@
 <?php
-// Archivo principal de entrada de la aplicación
 session_start();
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/controllers/UsuarioController.php';
