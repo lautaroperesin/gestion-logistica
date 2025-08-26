@@ -8,9 +8,6 @@
                 <span class="badge bg-primary me-2">
                     <i class="fas fa-calendar-day me-1"></i> <?= date('d/m/Y') ?>
                 </span>
-                <button class="btn btn-sm btn-outline-secondary" onclick="location.reload()" title="Actualizar datos">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
             </div>
         </div>
 

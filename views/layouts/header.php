@@ -45,7 +45,6 @@
                                     <i class="fas fa-user me-1"></i> <?php echo $_SESSION['nombre'] ?? 'Usuario'; ?>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item" href="?route=perfil"><i class="fas fa-user-cog me-2"></i>Mi perfil</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item text-danger" href="?route=logout"><i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión</a></li>
                                 </ul>
@@ -67,8 +66,6 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><span class="dropdown-item-text"><i class="fas fa-user me-2"></i><?php echo $_SESSION['nombre'] ?? 'Usuario'; ?></span></li>
                                 <li><span class="dropdown-item-text text-muted small"><?php echo $_SESSION['email'] ?? ''; ?></span></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="?route=perfil"><i class="fas fa-user-cog me-2"></i>Mi perfil</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="?route=logout"><i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión</a></li>
                             </ul>

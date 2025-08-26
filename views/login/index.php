@@ -13,9 +13,6 @@
             <div class="card shadow">
                 <div class="card-body p-5">
                     <h2 class="text-center mb-4">Iniciar Sesión</h2>
-                    <?php if (isset($_GET['error'])): ?>
-                        <div class="alert alert-danger mb-4"><?php echo htmlspecialchars($_GET['error']); ?></div>
-                    <?php endif; ?>
                     <form method="POST" action="?route=login">
                         <div class="mb-3">
                             <label for="email" class="form-label">Correo Electrónico</label>

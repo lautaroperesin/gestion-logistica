@@ -25,7 +25,7 @@ $route = $_GET['route'] ?? 'home';
 $publicRoutes = ['login', 'registro', 'logout'];
 if (!in_array($route, $publicRoutes)) {
     if (!isset($_SESSION['id_usuario'])) {
-        header('Location: ?route=login&error=Debes iniciar sesión para acceder');
+        header('Location: ?route=login');
         exit();
     }
 }
