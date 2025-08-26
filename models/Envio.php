@@ -6,8 +6,8 @@ class Envio {
         $this->conn = $conn;
     }
 
-    public function obtenerTodos() {
-        $stmt = $this->conn->prepare("
+    public function obtenerTodos($limit = null, $offset = 0, $filtros = []) {
+        $sql = "
             SELECT e.*, 
                    u1.direccion as origen_direccion,
                    l1.localidad as origen_localidad,
@@ -29,8 +29,62 @@ class Envio {
             JOIN paises pa2 ON p2.id_pais = pa2.id_pais
             JOIN estados_envio ee ON e.id_estado_envio = ee.id_estado_envio
             WHERE e.deleted = 0 
-            ORDER BY e.fecha_creacion_envio DESC
-        ");
+        ";
+        
+        // Aplicar filtros
+        $params = [];
+        $types = '';
+        $whereConditions = [];
+        
+        // Filtro por número de seguimiento
+        if (!empty($filtros['numero_seguimiento'])) {
+            $whereConditions[] = "e.numero_seguimiento LIKE ?";
+            $params[] = '%' . $filtros['numero_seguimiento'] . '%';
+            $types .= 's';
+        }
+        
+        // Filtro por estado
+        if (!empty($filtros['estado'])) {
+            $whereConditions[] = "ee.estado = ?";
+            $params[] = $filtros['estado'];
+            $types .= 's';
+        }
+        
+        // Filtro por fecha desde
+        if (!empty($filtros['fecha_desde'])) {
+            $whereConditions[] = "e.fecha_salida >= ?";
+            $params[] = $filtros['fecha_desde'];
+            $types .= 's';
+        }
+        
+        // Filtro por fecha hasta
+        if (!empty($filtros['fecha_hasta'])) {
+            $whereConditions[] = "e.fecha_salida <= ?";
+            $params[] = $filtros['fecha_hasta'] . ' 23:59:59'; // Incluir todo el día
+            $types .= 's';
+        }
+        
+        // Agregar condiciones WHERE si existen
+        if (!empty($whereConditions)) {
+            $sql .= " AND " . implode(" AND ", $whereConditions);
+        }
+        
+        // Ordenar y paginar
+        $sql .= " ORDER BY e.fecha_creacion_envio DESC";
+        
+        if ($limit !== null) {
+            $sql .= " LIMIT ? OFFSET ?";
+            $types .= 'ii';
+            $params[] = $limit;
+            $params[] = $offset;
+        }
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        // Vincular parámetros si existen
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
         $stmt->execute();
         $result = $stmt->get_result();
         $envios = $result->fetch_all(MYSQLI_ASSOC);
@@ -61,6 +115,62 @@ class Envio {
         return $envios;
     }
 
+    public function contarTotal($filtros = []) {
+        $sql = "SELECT COUNT(*) as total 
+                FROM envios e
+                JOIN estados_envio ee ON e.id_estado_envio = ee.id_estado_envio
+                WHERE e.deleted = 0";
+        
+        $params = [];
+        $types = '';
+        $whereConditions = [];
+        
+        // Filtro por número de seguimiento
+        if (!empty($filtros['numero_seguimiento'])) {
+            $whereConditions[] = "e.numero_seguimiento LIKE ?";
+            $params[] = '%' . $filtros['numero_seguimiento'] . '%';
+            $types .= 's';
+        }
+        
+        // Filtro por estado
+        if (!empty($filtros['estado'])) {
+            $whereConditions[] = "ee.estado = ?";
+            $params[] = $filtros['estado'];
+            $types .= 's';
+        }
+        
+        // Filtro por fecha desde
+        if (!empty($filtros['fecha_desde'])) {
+            $whereConditions[] = "e.fecha_salida >= ?";
+            $params[] = $filtros['fecha_desde'];
+            $types .= 's';
+        }
+        
+        // Filtro por fecha hasta
+        if (!empty($filtros['fecha_hasta'])) {
+            $whereConditions[] = "e.fecha_salida <= ?";
+            $params[] = $filtros['fecha_hasta'] . ' 23:59:59';
+            $types .= 's';
+        }
+        
+        // Agregar condiciones WHERE si existen
+        if (!empty($whereConditions)) {
+            $sql .= " AND " . implode(" AND ", $whereConditions);
+        }
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        // Vincular parámetros si existen
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return (int)$row['total'];
+    }
+    
     public function obtenerPorId($id) {
         $stmt = $this->conn->prepare("
             SELECT e.*, 

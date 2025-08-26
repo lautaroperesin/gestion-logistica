@@ -1,11 +1,76 @@
 <?php
 require_once __DIR__ . '/../layouts/header.php';
+
+function getStatusBadgeClass($status) {
+    $classes = [
+        'pendiente' => 'bg-warning',
+        'en preparacion' => 'bg-info',
+        'en transito' => 'bg-primary',
+        'entregado' => 'bg-success',
+        'demorado' => 'bg-warning',
+        'cancelado' => 'bg-danger'
+    ];
+    
+    return $classes[strtolower($status)] ?? 'bg-secondary';
+}
 ?>
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Envíos</h1>
         <a href="?route=envios_create" class="btn btn-primary">Nuevo Envío</a>
+    </div>
+
+    <!-- Filtros de búsqueda -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Filtros de búsqueda</h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" action="" class="row g-3">
+                <input type="hidden" name="route" value="envios">
+                
+                <div class="col-md-3">
+                    <label for="numero_seguimiento" class="form-label">Número de Seguimiento</label>
+                    <input type="text" class="form-control" id="numero_seguimiento" name="numero_seguimiento" 
+                           value="<?= htmlspecialchars($_GET['numero_seguimiento'] ?? '') ?>">
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="estado" class="form-label">Estado</label>
+                    <select class="form-select" id="estado" name="estado">
+                        <option value="">Todos los estados</option>
+                        <option value="pendiente" <?= ($_GET['estado'] ?? '') === 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
+                        <option value="en preparacion" <?= ($_GET['estado'] ?? '') === 'en preparacion' ? 'selected' : '' ?>>En Preparación</option>
+                        <option value="en transito" <?= ($_GET['estado'] ?? '') === 'en transito' ? 'selected' : '' ?>>En Tránsito</option>
+                        <option value="entregado" <?= ($_GET['estado'] ?? '') === 'entregado' ? 'selected' : '' ?>>Entregado</option>
+                        <option value="demorado" <?= ($_GET['estado'] ?? '') === 'demorado' ? 'selected' : '' ?>>Demorado</option>
+                        <option value="cancelado" <?= ($_GET['estado'] ?? '') === 'cancelado' ? 'selected' : '' ?>>Cancelado</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="fecha_desde" class="form-label">Fecha desde</label>
+                    <input type="date" class="form-control" id="fecha_desde" name="fecha_desde" 
+                           value="<?= htmlspecialchars($_GET['fecha_desde'] ?? '') ?>">
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="fecha_hasta" class="form-label">Fecha hasta</label>
+                    <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta" 
+                           value="<?= htmlspecialchars($_GET['fecha_hasta'] ?? '') ?>">
+                </div>
+                
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                    <a href="?route=envios" class="btn btn-secondary">
+                        <i class="fas fa-undo"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 
     <div class="card">
@@ -31,8 +96,8 @@ require_once __DIR__ . '/../layouts/header.php';
                             <td><?= htmlspecialchars($envio['numero_seguimiento']) ?></td>
                             <td><?= htmlspecialchars($envio['origen']) ?></td>
                             <td><?= htmlspecialchars($envio['destino']) ?></td>
-                            <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($envio['fecha_salida']))) ?></td>
-                            <td><?= htmlspecialchars($envio['estado']) ?></td>
+                            <td><?= htmlspecialchars(date('d/m/Y', strtotime($envio['fecha_salida']))) ?></td>
+                            <td><span class="badge <?= getStatusBadgeClass($envio['estado']) ?>"><?= ucfirst(str_replace('_', ' ', $envio['estado'])) ?></span></td>
                             <td><?= number_format($envio['peso_kg'], 2) ?></td>
                             <td><?= number_format($envio['volumen_m3'], 2) ?></td>
                             <td>$<?= number_format($envio['costo_total'], 2) ?></td>
@@ -50,6 +115,27 @@ require_once __DIR__ . '/../layouts/header.php';
                     </tbody>
                 </table>
             </div>
+            
+            <!-- Paginación -->
+            <?php if ($totalPages > 1): ?>
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <?= $currentPage <= 1 ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?route=envios&page=<?= $currentPage - 1 ?>">Anterior</a>
+                    </li>
+                    
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <li class="page-item <?= $i == $currentPage ? 'active' : '' ?>">
+                            <a class="page-link" href="?route=envios&page=<?= $i ?>"><?= $i ?></a>
+                        </li>
+                    <?php endfor; ?>
+                    
+                    <li class="page-item <?= $currentPage >= $totalPages ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?route=envios&page=<?= $currentPage + 1 ?>">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+            <?php endif; ?>
         </div>
     </div>
 </div>

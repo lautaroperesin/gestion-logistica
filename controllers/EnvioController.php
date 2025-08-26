@@ -18,7 +18,33 @@ class EnvioController {
     }
 
     public function index() {
-        $envios = $this->envioModel->obtenerTodos();
+        // Configuración de paginación
+        $itemsPorPagina = 10; // Número de elementos por página
+        $paginaActual = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $paginaActual = max(1, $paginaActual); // Asegurar que la página sea al menos 1
+        
+        // Obtener parámetros de búsqueda
+        $filtros = [
+            'numero_seguimiento' => $_GET['numero_seguimiento'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'fecha_desde' => $_GET['fecha_desde'] ?? '',
+            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+        ];
+        
+        // Calcular el offset
+        $offset = ($paginaActual - 1) * $itemsPorPagina;
+        
+        // Obtener los envíos para la página actual con los filtros aplicados
+        $envios = $this->envioModel->obtenerTodos($itemsPorPagina, $offset, $filtros);
+        
+        // Obtener el total de envíos para la paginación (con los mismos filtros)
+        $totalEnvios = $this->envioModel->contarTotal($filtros);
+        $totalPaginas = ceil($totalEnvios / $itemsPorPagina);
+        
+        // Pasar los datos a la vista
+        $currentPage = $paginaActual;
+        $totalPages = $totalPaginas;
+        
         include __DIR__ . '/../views/envios/index.php';
     }
 
@@ -137,15 +163,5 @@ class EnvioController {
             header('Location: ?route=envios');
             exit;
         }
-    }
-
-    public function getByEstado($estado) {
-        $envios = $this->envioModel->obtenerPorEstado($estado);
-        include __DIR__ . '/../views/envios/index.php';
-    }
-
-    public function getByCliente($id_cliente) {
-        $envios = $this->envioModel->obtenerPorCliente($id_cliente);
-        include __DIR__ . '/../views/envios/index.php';
     }
 }
