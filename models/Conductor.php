@@ -36,4 +36,12 @@ class Conductor {
         $stmt->bind_param("i", $id_conductor);
         return $stmt->execute();
     }
+    
+    public function buscarPorNombre($termino) {
+        $termino = "%$termino%";
+        $stmt = $this->conn->prepare("SELECT * FROM conductores WHERE conductor LIKE ? AND deleted = 0 ORDER BY conductor ASC");
+        $stmt->bind_param("s", $termino);
+        $stmt->execute();
+        return $stmt->get_result();
+    }
 }

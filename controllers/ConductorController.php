@@ -12,7 +12,14 @@ class ConductorController {
     }
 
     public function index() {
-        $conductores = $this->conductor->obtenerTodos();
+        $busqueda = $_GET['buscar'] ?? '';
+        
+        if (!empty($busqueda)) {
+            $conductores = $this->conductor->buscarPorNombre($busqueda);
+        } else {
+            $conductores = $this->conductor->obtenerTodos();
+        }
+        
         include __DIR__ . '/../views/layouts/header.php';
         include __DIR__ . '/../views/conductores/index.php';
         include __DIR__ . '/../views/layouts/footer.php';
