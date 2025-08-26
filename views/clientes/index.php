@@ -2,10 +2,34 @@
         <div class="row">
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1><i class="fas fa-users"></i>Lista de Clientes</h1>
+                    <h1><i class="fas fa-users"></i> Lista de Clientes</h1>
                     <a href="?route=clientes_create" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Nuevo Cliente
                     </a>
+                </div>
+                
+                <!-- Barra de búsqueda -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <form action="" method="get" class="d-flex">
+                            <input type="hidden" name="route" value="clientes">
+                            <div class="input-group">
+                                <input type="text" 
+                                       name="buscar" 
+                                       class="form-control" 
+                                       placeholder="Buscar cliente por nombre..." 
+                                       value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>">
+                                <button class="btn btn-outline-secondary" type="submit">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                                <?php if(isset($_GET['buscar']) && !empty($_GET['buscar'])): ?>
+                                    <a href="?route=clientes" class="btn btn-outline-danger">
+                                        <i class="fas fa-times"></i> Limpiar
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
                 <?php if (isset($_GET['success'])): ?>

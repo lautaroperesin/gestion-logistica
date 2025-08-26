@@ -12,7 +12,14 @@ class ClienteController {
     }
 
     public function index() {
-        $clientes = $this->cliente->obtenerTodos();
+        $busqueda = $_GET['buscar'] ?? '';
+        
+        if (!empty($busqueda)) {
+            $clientes = $this->cliente->buscarPorNombre($busqueda);
+        } else {
+            $clientes = $this->cliente->obtenerTodos();
+        }
+        
         include __DIR__ . '/../views/layouts/header.php';
         include __DIR__ . '/../views/clientes/index.php';
         include __DIR__ . '/../views/layouts/footer.php';

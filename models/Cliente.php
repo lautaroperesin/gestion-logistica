@@ -36,4 +36,12 @@ class Cliente {
         $stmt->bind_param("i", $id_cliente);
         return $stmt->execute();
     }
+    
+    public function buscarPorNombre($termino) {
+        $termino = "%$termino%";
+        $stmt = $this->conn->prepare("SELECT * FROM clientes WHERE cliente LIKE ? AND deleted = 0 ORDER BY cliente ASC");
+        $stmt->bind_param("s", $termino);
+        $stmt->execute();
+        return $stmt->get_result();
+    }
 }

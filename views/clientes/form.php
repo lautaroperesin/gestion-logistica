@@ -117,12 +117,5 @@ $mode = $isEdit ? 'edit' : 'create';
             document.getElementById('email').focus();
             return;
         }
-        
-        <?php if ($isEdit): ?>
-        // Confirmación antes de actualizar
-        if (!confirm('¿Está seguro de que desea actualizar este cliente?')) {
-            e.preventDefault();
-        }
-        <?php endif; ?>
     });
 </script>
