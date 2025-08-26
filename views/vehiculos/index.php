@@ -6,6 +6,30 @@
         </a>
     </div>
 
+    <!-- Barra de búsqueda -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form action="" method="get" class="d-flex">
+                <input type="hidden" name="route" value="vehiculos">
+                <div class="input-group">
+                    <input type="text" 
+                           name="buscar" 
+                           class="form-control" 
+                           placeholder="Buscar por marca, modelo o patente..." 
+                           value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>">
+                    <button class="btn btn-outline-secondary" type="submit">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                    <?php if(isset($_GET['buscar']) && !empty($_GET['buscar'])): ?>
+                        <a href="?route=vehiculos" class="btn btn-outline-danger">
+                            <i class="fas fa-times"></i> Limpiar
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">

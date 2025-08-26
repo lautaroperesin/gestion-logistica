@@ -53,4 +53,16 @@ class Vehiculo {
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
+    
+    public function buscarPorTermino($termino) {
+        $termino = "%$termino%";
+        $stmt = $this->conn->prepare("SELECT * FROM vehiculos 
+            WHERE (marca LIKE ? OR modelo LIKE ? OR patente LIKE ?) 
+            AND deleted = 0 
+            ORDER BY marca, modelo ASC");
+        $stmt->bind_param("sss", $termino, $termino, $termino);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 }

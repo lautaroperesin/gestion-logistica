@@ -12,7 +12,14 @@ class VehiculoController {
     }
 
     public function index() {
-        $vehiculos = $this->vehiculo->obtenerTodos();
+        $busqueda = $_GET['buscar'] ?? '';
+        
+        if (!empty($busqueda)) {
+            $vehiculos = $this->vehiculo->buscarPorTermino($busqueda);
+        } else {
+            $vehiculos = $this->vehiculo->obtenerTodos();
+        }
+        
         include __DIR__ . '/../views/layouts/header.php';
         include __DIR__ . '/../views/vehiculos/index.php';
         include __DIR__ . '/../views/layouts/footer.php';
