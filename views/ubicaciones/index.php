@@ -40,6 +40,24 @@ require_once __DIR__ . '/../layouts/header.php';
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                
+                <?php if ($totalPaginas > 1): ?>
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item <?= $pagina <= 1 ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?route=ubicaciones&page=<?= $pagina - 1 ?>">Anterior</a>
+                        </li>
+                        <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+                            <li class="page-item <?= $i == $pagina ? 'active' : '' ?>">
+                                <a class="page-link" href="?route=ubicaciones&page=<?= $i ?>"><?= $i ?></a>
+                            </li>
+                        <?php endfor; ?>
+                        <li class="page-item <?= $pagina >= $totalPaginas ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?route=ubicaciones&page=<?= $pagina + 1 ?>">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+                <?php endif; ?>
             </div>
         </div>
     </div>

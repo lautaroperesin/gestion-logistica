@@ -6,15 +6,27 @@ class Ubicacion {
         $this->conn = $conn;
     }
 
-    public function obtenerTodos() {
+    public function obtenerTodos($porPagina = 10, $pagina = 1) {
+        $offset = ($pagina - 1) * $porPagina;
         $stmt = $this->conn->prepare("SELECT u.*, l.localidad, p.provincia, pa.pais 
                                      FROM ubicaciones u 
                                      JOIN localidades l ON u.id_localidad = l.id_localidad 
                                      JOIN provincias p ON l.id_provincia = p.id_provincia 
                                      JOIN paises pa ON p.id_pais = pa.id_pais 
-                                     WHERE u.deleted = 0 ");
+                                     WHERE u.deleted = 0 
+                                     ORDER BY u.id_ubicacion DESC
+                                     LIMIT ? OFFSET ?");
+        $stmt->bind_param("ii", $porPagina, $offset);
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    public function contarTotal() {
+        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM ubicaciones WHERE deleted = 0");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return $row['total'];
     }
 
     public function obtenerPorId($id) {

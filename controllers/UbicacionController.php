@@ -12,7 +12,19 @@ class UbicacionController {
     }
 
     public function index() {
-        $ubicaciones = $this->ubicacionModel->obtenerTodos();
+        $porPagina = 10;
+        $pagina = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        
+        // Obtener el total de ubicaciones para la paginación
+        $totalUbicaciones = $this->ubicacionModel->contarTotal();
+        $totalPaginas = ceil($totalUbicaciones / $porPagina);
+        
+        // Asegurarse de que la página actual esté dentro del rango válido
+        $pagina = max(1, min($pagina, $totalPaginas));
+        
+        // Obtener las ubicaciones para la página actual
+        $ubicaciones = $this->ubicacionModel->obtenerTodos($porPagina, $pagina);
+        
         include __DIR__ . '/../views/layouts/header.php';
         include __DIR__ . '/../views/ubicaciones/index.php';
         include __DIR__ . '/../views/layouts/footer.php';

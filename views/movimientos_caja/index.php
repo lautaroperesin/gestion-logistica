@@ -7,11 +7,11 @@ require_once __DIR__ . '/../layouts/header.php';
         <div class="col-md-6">
             <h2>Movimientos de Caja</h2>
         </div>
-        <div class="col-md-6 text-end">
+<!--         <div class="col-md-6 text-end">
             <a href="?route=movimientos_caja_create" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Nuevo Movimiento
             </a>
-        </div>
+        </div> -->
     </div>
 
     <div class="card">
