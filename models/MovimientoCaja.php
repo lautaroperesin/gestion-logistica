@@ -42,9 +42,68 @@ class MovimientoCaja {
     }
 
     public function crear($id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones) {
-        $stmt = $this->conn->prepare("INSERT INTO movimientos_caja (id_factura, id_metodo_pago, fecha_pago, monto, observaciones) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("iisds", $id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones);
-        return $stmt->execute();
+        // Iniciar transacción
+        $this->conn->begin_transaction();
+        
+        try {
+            // 1. Insertar el movimiento de caja
+            $stmt = $this->conn->prepare("INSERT INTO movimientos_caja (id_factura, id_metodo_pago, fecha_pago, monto, observaciones) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("iisds", $id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones);
+            $result = $stmt->execute();
+            
+            if (!$result) {
+                throw new Exception("Error al crear el movimiento de caja");
+            }
+            
+            // 2. Calcular el total pagado hasta ahora
+            $stmt = $this->conn->prepare("
+                SELECT f.total, COALESCE(SUM(mc.monto), 0) as total_pagado
+                FROM facturas f
+                LEFT JOIN movimientos_caja mc ON f.id_factura = mc.id_factura AND mc.deleted = 0
+                WHERE f.id_factura = ?
+                GROUP BY f.id_factura
+            ");
+            $stmt->bind_param("i", $id_factura);
+            $stmt->execute();
+            $factura = $stmt->get_result()->fetch_assoc();
+            
+            if (!$factura) {
+                throw new Exception("Factura no encontrada");
+            }
+            
+            $total = floatval($factura['total']);
+            $total_pagado = floatval($factura['total_pagado']);
+            
+            // 3. Determinar el nuevo estado de la factura
+            $nuevo_estado = 1; // Por defecto, Emitida
+            
+            if ($total_pagado <= 0) {
+                $nuevo_estado = 1; // Emitida
+            } elseif ($total_pagado > 0 && $total_pagado < $total) {
+                $nuevo_estado = 2; // Parcialmente Pagada
+            } elseif ($total_pagado >= $total) {
+                $nuevo_estado = 3; // Pagada
+            }
+            
+            // 4. Actualizar el estado de la factura
+            $stmt = $this->conn->prepare("UPDATE facturas SET estado = ? WHERE id_factura = ?");
+            $stmt->bind_param("ii", $nuevo_estado, $id_factura);
+            $result = $stmt->execute();
+            
+            if (!$result) {
+                throw new Exception("Error al actualizar el estado de la factura");
+            }
+            
+            // Si todo salió bien, confirmar la transacción
+            $this->conn->commit();
+            return true;
+            
+        } catch (Exception $e) {
+            // Si hay algún error, revertir la transacción
+            $this->conn->rollback();
+            error_log("Error en MovimientoCaja::crear: " . $e->getMessage());
+            return false;
+        }
     }
 
     public function editar($id_movimiento, $id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones) {

@@ -12,7 +12,30 @@ class FacturaController {
     }
 
     public function index() {
-        $facturas = $this->facturaModel->obtenerTodos();
+        // Obtener parámetros de filtrado
+        $filtros = [
+            'numero_factura' => $_GET['numero_factura'] ?? '',
+            'id_cliente' => $_GET['id_cliente'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'fecha_desde' => $_GET['fecha_desde'] ?? '',
+            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+        ];
+        
+        // Configuración de paginación
+        $porPagina = 10; // Fijamos 10 elementos por página
+        $pagina = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        
+        // Obtener datos con paginación
+        $resultado = $this->facturaModel->buscar($filtros, $porPagina, $pagina);
+        
+        // Extraer datos y paginación
+        $facturas = $resultado['datos'];
+        $paginacion = $resultado['paginacion'];
+        
+        // Obtener lista de clientes para el filtro
+        $clientes = (new Cliente($this->db->getConnection()))->obtenerTodos();
+        
+        // Pasar datos a la vista
         include __DIR__ . '/../views/layouts/header.php';
         include __DIR__ . '/../views/facturas/index.php';
         include __DIR__ . '/../views/layouts/footer.php';
@@ -86,9 +109,16 @@ class FacturaController {
     }
 
     public function delete() {
-        $id = $_GET['id_factura'] ?? null;
-        if ($this->facturaModel->eliminar($id)) {
-            header('Location: ?route=facturas');
+        // Obtener el ID de la factura de GET o POST
+        $id = $_POST['id_factura'] ?? $_GET['id_factura'] ?? null;
+        
+        if ($id && $this->facturaModel->eliminar($id)) {
+            // Redirigir con mensaje de éxito
+            header('Location: ?route=facturas&success=Factura eliminada correctamente');
+            exit;
+        } else {
+            // Redirigir con mensaje de error
+            header('Location: ?route=facturas&error=No se pudo eliminar la factura');
             exit;
         }
     }
@@ -107,20 +137,5 @@ class FacturaController {
         }
 
         require __DIR__ . '/../views/facturas/pago.php';
-    }
-
-    public function getByEnvio($id_envio) {
-        $facturas = $this->facturaModel->obtenerPorEnvio($id_envio);
-        include __DIR__ . '/../views/facturas/index.php';
-    }
-
-    public function getByCliente($id_cliente) {
-        $facturas = $this->facturaModel->obtenerPorCliente($id_cliente);
-        include __DIR__ . '/../views/facturas/index.php';
-    }
-
-    public function getByEstado($estado) {
-        $facturas = $this->facturaModel->obtenerPorEstado($estado);
-        include __DIR__ . '/../views/facturas/index.php';
     }
 }

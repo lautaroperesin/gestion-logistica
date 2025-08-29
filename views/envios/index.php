@@ -118,20 +118,46 @@ function getStatusBadgeClass($status) {
             
             <!-- Paginación -->
             <?php if ($totalPages > 1): ?>
+            <?php
+            // Crear un array con los parámetros actuales del GET
+            $params = [];
+            $ignoreParams = ['page'];
+            
+            // Obtener todos los parámetros de filtro del GET
+            foreach ($_GET as $key => $value) {
+                if (!in_array($key, $ignoreParams) && !empty($value)) {
+                    $params[$key] = $value;
+                }
+            }
+            
+            // Asegurarse de que el parámetro 'route' esté presente
+            $params['route'] = 'envios';
+            ?>
             <nav class="mt-4">
                 <ul class="pagination justify-content-center">
+                    <!-- Botón Anterior -->
                     <li class="page-item <?= $currentPage <= 1 ? 'disabled' : '' ?>">
-                        <a class="page-link" href="?route=envios&page=<?= $currentPage - 1 ?>">Anterior</a>
+                        <?php if ($currentPage > 1): ?>
+                            <a class="page-link" href="?<?= http_build_query(array_merge($params, ['page' => $currentPage - 1])) ?>">Anterior</a>
+                        <?php else: ?>
+                            <span class="page-link">Anterior</span>
+                        <?php endif; ?>
                     </li>
                     
+                    <!-- Números de página -->
                     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                         <li class="page-item <?= $i == $currentPage ? 'active' : '' ?>">
-                            <a class="page-link" href="?route=envios&page=<?= $i ?>"><?= $i ?></a>
+                            <a class="page-link" href="?<?= http_build_query(array_merge($params, ['page' => $i])) ?>"><?= $i ?></a>
                         </li>
                     <?php endfor; ?>
                     
+                    <!-- Botón Siguiente -->
                     <li class="page-item <?= $currentPage >= $totalPages ? 'disabled' : '' ?>">
-                        <a class="page-link" href="?route=envios&page=<?= $currentPage + 1 ?>">Siguiente</a>
+                        <?php if ($currentPage < $totalPages): ?>
+                            <a class="page-link" href="?<?= http_build_query(array_merge($params, ['page' => $currentPage + 1])) ?>">Siguiente</a>
+                        <?php else: ?>
+                            <span class="page-link">Siguiente</span>
+                        <?php endif; ?>
                     </li>
                 </ul>
             </nav>

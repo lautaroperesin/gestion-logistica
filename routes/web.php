@@ -252,18 +252,6 @@ switch ($route) {
         $facturaController = new FacturaController();
         $facturaController->pago();
         break;
-    case 'facturas_by_envio':
-        $facturaController = new FacturaController();
-        $facturaController->getByEnvio();
-        break;
-    case 'facturas_by_cliente':
-        $facturaController = new FacturaController();
-        $facturaController->getByCliente();
-        break;
-    case 'facturas_by_estado':
-        $facturaController = new FacturaController();
-        $facturaController->getByEstado();
-        break;
         
     // Rutas de Métodos de Pago
     case 'metodos_pago':

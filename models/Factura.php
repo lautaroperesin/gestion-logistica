@@ -74,28 +74,125 @@ class Factura {
         return $stmt->execute();
     }
 
-    // Métodos para filtrar facturas
-    public function obtenerPorEnvio($id_envio) {
-        $stmt = $this->conn->prepare("SELECT * FROM facturas WHERE id_envio = ? AND deleted = 0");
-        $stmt->bind_param("i", $id_envio);
+    public function buscar($filtros, $porPagina = 10, $pagina = 1) {
+        // Primero, obtener el conteo total de registros
+        $sqlCount = "
+            SELECT COUNT(DISTINCT f.id_factura) as total
+            FROM facturas f
+            JOIN envios e ON f.id_envio = e.id_envio
+            JOIN clientes c ON f.id_cliente = c.id_cliente
+            LEFT JOIN movimientos_caja mc ON f.id_factura = mc.id_factura
+            WHERE f.deleted = 0
+        ";
+        
+        // Consulta principal para obtener los datos
+        $sql = "
+            SELECT 
+                f.*, 
+                e.numero_seguimiento, 
+                c.cliente,
+                COALESCE(SUM(mc.monto), 0) as total_pagado
+            FROM facturas f
+            JOIN envios e ON f.id_envio = e.id_envio
+            JOIN clientes c ON f.id_cliente = c.id_cliente
+            LEFT JOIN movimientos_caja mc ON f.id_factura = mc.id_factura
+            WHERE f.deleted = 0
+        ";
+        
+        $params = [];
+        $types = '';
+        
+        // Aplicar filtros
+        $conditions = [];
+        
+        if (!empty($filtros['numero_factura'])) {
+            $conditions[] = "f.numero_factura LIKE ?";
+            $params[] = '%' . $filtros['numero_factura'] . '%';
+            $types .= 's';
+        }
+        
+        if (!empty($filtros['id_cliente'])) {
+            $conditions[] = "f.id_cliente = ?";
+            $params[] = $filtros['id_cliente'];
+            $types .= 'i';
+        }
+        
+        if (!empty($filtros['estado'])) {
+            $conditions[] = "f.estado = ?";
+            $params[] = $filtros['estado'];
+            $types .= 's';
+        }
+        
+        if (!empty($filtros['fecha_desde'])) {
+            $conditions[] = "f.fecha_emision >= ?";
+            $params[] = $filtros['fecha_desde'] . ' 00:00:00';
+            $types .= 's';
+        }
+        
+        if (!empty($filtros['fecha_hasta'])) {
+            $conditions[] = "f.fecha_emision <= ?";
+            $params[] = $filtros['fecha_hasta'] . ' 23:59:59';
+            $types .= 's';
+        }
+        
+        if (!empty($conditions)) {
+            $whereClause = ' AND ' . implode(' AND ', $conditions);
+            $sql .= $whereClause;
+            $sqlCount .= $whereClause;
+        }
+        
+        // Obtener el total de registros
+        $stmtCount = $this->conn->prepare($sqlCount);
+        if (!empty($params)) {
+            $stmtCount->bind_param($types, ...$params);
+        }
+        $stmtCount->execute();
+        $totalRegistros = $stmtCount->get_result()->fetch_assoc()['total'];
+        
+        // Calcular la paginación
+        $totalPaginas = ceil($totalRegistros / $porPagina);
+        $offset = ($pagina - 1) * $porPagina;
+        
+        // Agregar agrupación, ordenamiento y límites a la consulta principal
+        $sql .= " GROUP BY f.id_factura ORDER BY f.fecha_emision DESC LIMIT ? OFFSET ?";
+        
+        // Agregar los parámetros de paginación
+        $params[] = $porPagina;
+        $params[] = $offset;
+        $types .= 'ii';
+        
+        // Ejecutar la consulta principal
+        $stmt = $this->conn->prepare($sql);
+        
+        // Vincular parámetros si hay filtros
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+        
         $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $resultados = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        
+        // Si hay un filtro de estado, lo aplicamos después de calcular el estado real
+        if (!empty($filtros['estado'])) {            
+            // Reindexar el array después de filtrar
+            $resultados = array_values($resultados);
+            
+            // Recalcular el total de registros después de aplicar el filtro de estado
+            $totalRegistros = count($resultados);
+            $totalPaginas = ceil($totalRegistros / $porPagina);
+        }
+        
+        return [
+            'datos' => $resultados,
+            'paginacion' => [
+                'total_registros' => $totalRegistros,
+                'por_pagina' => $porPagina,
+                'pagina_actual' => $pagina,
+                'total_paginas' => $totalPaginas
+            ]
+        ];
     }
-
-    public function obtenerPorCliente($id_cliente) {
-        $stmt = $this->conn->prepare("SELECT * FROM facturas WHERE id_cliente = ? AND deleted = 0 ORDER BY fecha_emision DESC");
-        $stmt->bind_param("i", $id_cliente);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    }
-
-    public function obtenerPorEstado($estado) {
-        $stmt = $this->conn->prepare("SELECT * FROM facturas WHERE estado = ? AND deleted = 0 ORDER BY fecha_emision DESC");
-        $stmt->bind_param("i", $estado);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    }
-
+    
     public function obtenerPorFecha($fecha_inicio, $fecha_fin) {
         $stmt = $this->conn->prepare("SELECT * FROM facturas WHERE fecha_emision BETWEEN ? AND ? AND deleted = 0 ORDER BY fecha_emision DESC");
         $stmt->bind_param("ss", $fecha_inicio, $fecha_fin);
