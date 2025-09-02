@@ -22,8 +22,8 @@ class DashboardController {
             // Estadísticas generales
             'clientes' => 0,
             'conductores' => 0,
-            'vehiculos' => 0,
-            'vehiculos_disponibles' => 0,
+            'facturas_pendientes' => 0,
+            'monto_pendiente' => '0.00',
             'envios_mes_actual' => 0,
             'ingresos_mes_actual' => '0.00',
             'envios_pendientes' => 0,
@@ -35,6 +35,32 @@ class DashboardController {
         
         // Para manejo de errores
         $error = null;
+
+        // Obtener facturas pendientes de pago
+        $result = $conn->query("
+            SELECT 
+                f.id_factura,
+                f.total,
+                (SELECT COALESCE(SUM(mc.monto), 0) 
+                 FROM movimientos_caja mc 
+                 WHERE mc.id_factura = f.id_factura) as pagado
+            FROM facturas f
+            WHERE (f.estado = 2 OR f.estado = 1)
+            AND f.deleted = 0
+            HAVING (total - pagado) > 0
+        ") or die($conn->error);
+        
+        $total_pendiente = 0;
+        $total_facturas = 0;
+        
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $total_pendiente += ($row['total'] - $row['pagado']);
+                $total_facturas++;
+            }
+            $stats['facturas_pendientes'] = $total_facturas;
+            $stats['monto_pendiente'] = number_format($total_pendiente, 2, '.', '');
+        }
 
         // Contar clientes activos
         $result = $conn->query("SELECT COUNT(*) as total FROM clientes WHERE deleted = 0");
@@ -65,7 +91,7 @@ class DashboardController {
                 $result = $conn->query("
                     SELECT COUNT(*) as total 
                     FROM vehiculos 
-                    WHERE estado_vehiculo = 'Disponible' 
+                    WHERE estado_vehiculo = 1 
                     AND deleted = 0
                 ") or die($conn->error);
                 

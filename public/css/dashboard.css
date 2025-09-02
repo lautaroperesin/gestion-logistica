@@ -1,0 +1,134 @@
+/* Dashboard Styles */
+
+/* Card hover effects */
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: none;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Icon circles */
+.icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+/* Quick action buttons */
+.btn-hover-zoom {
+    transition: all 0.3s ease;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.btn-hover-zoom:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+    background-color: #f8f9fa;
+}
+
+/* Card header styling */
+.card-header {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Stat cards */
+.stat-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card .card-body {
+    position: relative;
+    z-index: 1;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.stat-card.border-start-primary::before {
+    background-color: #4e73df;
+}
+
+.stat-card.border-start-success::before {
+    background-color: #1cc88a;
+}
+
+.stat-card.border-start-info::before {
+    background-color: #36b9cc;
+}
+
+.stat-card.border-start-warning::before {
+    background-color: #f6c23e;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .btn-hover-zoom {
+        margin-bottom: 1rem;
+    }
+    
+    .stat-card {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Animation for quick actions */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.btn-hover-zoom:active {
+    animation: pulse 0.3s ease;
+}
+
+/* Badge styles */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    border-radius: 0.25rem;
+}
+
+/* Link hover effect */
+a.text-info {
+    transition: color 0.2s ease;
+}
+
+a.text-info:hover {
+    color: #0d6efd !important;
+    text-decoration: none;
+}
+
+/* Progress bar */
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    background-color: #eaecf4;
+}
+
+.progress-bar {
+    border-radius: 4px;
+}
