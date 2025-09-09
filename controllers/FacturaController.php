@@ -138,4 +138,110 @@ class FacturaController {
 
         require __DIR__ . '/../views/facturas/pago.php';
     }
+    
+    public function exportPdf() {
+        $id_factura = $_GET['id_factura'] ?? null;
+        if (!$id_factura) {
+            header('Location: ?route=facturas&error=ID de factura no válido');
+            exit;
+        }
+
+        // Obtener los datos de la factura
+        $factura = $this->facturaModel->obtenerPorId($id_factura);
+        if (!$factura) {
+            header('Location: ?route=facturas&error=Factura no encontrada');
+            exit;
+        }
+
+        // Incluir la biblioteca TCPDF
+        require_once __DIR__ . '/../vendor/tecnickcom/tcpdf/tcpdf.php';
+
+        // Crear una nueva instancia de TCPDF
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+        // Configuración del documento
+        $pdf->SetCreator('Sistema de Gestión Logística');
+        $pdf->SetAuthor('Sistema de Gestión Logística');
+        $pdf->SetTitle('Factura ' . $factura['numero_factura']);
+        $pdf->SetSubject('Factura ' . $factura['numero_factura']);
+        $pdf->SetKeywords('Factura, PDF, ' . $factura['numero_factura']);
+
+        // Eliminar cabecera y pie de página por defecto
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        // Agregar una página
+        $pdf->AddPage();
+
+        // Contenido del PDF
+        $html = '<!-- CSS -->
+        <style>
+            body { font-family: helvetica; font-size: 10pt; }
+            .header { text-align: center; margin-bottom: 20px; }
+            .header h1 { font-size: 18pt; margin: 0; }
+            .header p { margin: 5px 0; }
+            .info { margin-bottom: 15px; }
+            .info p { margin: 3px 0; }
+            table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+            th { background-color: #f2f2f2; text-align: left; padding: 8px; border: 1px solid #ddd; }
+            td { padding: 8px; border: 1px solid #ddd; }
+            .text-right { text-align: right; }
+            .total { font-weight: bold; font-size: 12pt; margin-top: 10px; }
+            .footer { margin-top: 30px; font-size: 8pt; text-align: center; color: #666; }
+        </style>
+        
+        <!-- Encabezado -->
+        <div class="header">
+            <h1>FACTURA #' . htmlspecialchars($factura['numero_factura']) . '</h1>
+            <p>Sistema de Gestión Logística</p>
+            <p>Fecha de emisión: ' . date('d/m/Y', strtotime($factura['fecha_emision'])) . '</p>
+            <p>Vencimiento: ' . ($factura['fecha_vencimiento'] ? date('d/m/Y', strtotime($factura['fecha_vencimiento'])) : 'No especificado') . '</p>
+        </div>
+        
+        <!-- Información del cliente -->
+        <div class="info">
+            <h3>Datos del Cliente</h3>
+            <p><strong>Cliente:</strong> ' . htmlspecialchars($factura['cliente']) . '</p>
+            <p><strong>N° de Envío:</strong> ' . htmlspecialchars($factura['numero_seguimiento'] ?? 'N/A') . '</p>
+        </div>
+        
+        <!-- Detalles de la factura -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Descripción</th>
+                    <th class="text-right">Cantidad</th>
+                    <th class="text-right">Precio Unitario</th>
+                    <th class="text-right">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Servicio de envío #' . htmlspecialchars($factura['numero_seguimiento'] ?? 'N/A') . '</td>
+                    <td class="text-right">1</td>
+                    <td class="text-right">$' . number_format($factura['subtotal'], 2) . '</td>
+                    <td class="text-right">$' . number_format($factura['subtotal'], 2) . '</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- Totales -->
+        <div class="text-right">
+            <p><strong>Subtotal:</strong> $' . number_format($factura['subtotal'], 2) . '</p>
+            <p><strong>IVA (' . $factura['iva'] . '%):</strong> $' . number_format(($factura['total'] - $factura['subtotal']), 2) . '</p>
+            <p class="total"><strong>Total:</strong> $' . number_format($factura['total'], 2) . '</p>
+        </div>
+        
+        <!-- Pie de página -->
+        <div class="footer">
+            <p>Gracias por su preferencia</p>
+        </div>';
+
+        // Escribir el contenido HTML
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+        // Cerrar y generar el PDF
+        $pdf->Output('factura_' . $factura['numero_factura'] . '.pdf', 'I');
+        exit;
+    }
 }

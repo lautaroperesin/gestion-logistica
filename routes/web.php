@@ -252,6 +252,10 @@ switch ($route) {
         $facturaController = new FacturaController();
         $facturaController->pago();
         break;
+    case 'facturas_export_pdf':
+        $facturaController = new FacturaController();
+        $facturaController->exportPdf();
+        break;
         
     // Rutas de Métodos de Pago
     case 'metodos_pago':

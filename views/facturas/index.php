@@ -125,16 +125,23 @@ require_once __DIR__ . '/../layouts/header.php';
                                 <td>$<?= number_format($factura['total'], 2) ?></td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="?route=facturas_edit&id_factura=<?= $factura['id_factura'] ?>" class="btn btn-sm btn-primary">
+                                        <a href="?route=facturas_edit&id_factura=<?= $factura['id_factura'] ?>" class="btn btn-sm btn-primary" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="?route=facturas_pago&id_factura=<?= $factura['id_factura'] ?>" class="btn btn-sm btn-success">
+                                        <a href="?route=facturas_pago&id_factura=<?= $factura['id_factura'] ?>" class="btn btn-sm btn-success" title="Pagos">
                                             <i class="fas fa-money-bill-wave"></i>
                                         </a>
-                                      <form action="?route=facturas_delete" method="POST" class="d-inline">
-                                        <input type="hidden" name="id_factura" value="<?= $factura['id_factura'] ?>">
-                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar esta factura?')"><i class="fas fa-trash"></i></button>
-                                    </form>
+                                        <?php if ($estado == 1): // Mostrar botón de PDF solo para facturas emitidas ?>
+                                        <a href="?route=facturas_export_pdf&id_factura=<?= $factura['id_factura'] ?>" class="btn btn-sm btn-secondary" title="Exportar a PDF" target="_blank">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </a>
+                                        <?php endif; ?>
+                                        <form action="?route=facturas_delete" method="POST" class="d-inline">
+                                            <input type="hidden" name="id_factura" value="<?= $factura['id_factura'] ?>">
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar esta factura?')" title="Eliminar">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
