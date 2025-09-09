@@ -48,8 +48,8 @@ require_once __DIR__ . '/../layouts/header.php';
 
                         <div class="mb-3">
                             <label for="fecha_salida" class="form-label">Fecha de Salida</label>
-                            <input type="datetime-local" class="form-control" id="fecha_salida" name="fecha_salida" 
-                                   value="<?php echo isset($envio) ? date('Y-m-d\TH:i', strtotime($envio['fecha_salida'])) : ''; ?>" required>
+                            <input type="date" class="form-control" id="fecha_salida" name="fecha_salida" 
+                                   value="<?php echo isset($envio) ? date('Y-m-d', strtotime($envio['fecha_salida'])) : ''; ?>" required>
                         </div>
 
                         <div class="mb-3">
