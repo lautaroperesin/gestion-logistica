@@ -128,9 +128,15 @@ require_once __DIR__ . '/../layouts/header.php';
                                         <a href="?route=facturas_edit&id_factura=<?= $factura['id_factura'] ?>" class="btn btn-sm btn-primary" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="?route=facturas_pago&id_factura=<?= $factura['id_factura'] ?>" class="btn btn-sm btn-success" title="Pagos">
+                                        <?php if ($estado == 3): // Botón deshabilitado para facturas pagadas ?>
+                                        <button class="btn btn-sm btn-secondary" title="Pago completado" disabled>
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <?php else: // Botón normal para facturas no pagadas ?>
+                                        <a href="?route=facturas_pago&id_factura=<?= $factura['id_factura'] ?>" class="btn btn-sm btn-success" title="Registrar pago">
                                             <i class="fas fa-money-bill-wave"></i>
                                         </a>
+                                        <?php endif; ?>
                                         <?php if ($estado == 1): // Mostrar botón de PDF solo para facturas emitidas ?>
                                         <a href="?route=facturas_export_pdf&id_factura=<?= $factura['id_factura'] ?>" class="btn btn-sm btn-secondary" title="Exportar a PDF" target="_blank">
                                             <i class="fas fa-file-pdf"></i>
