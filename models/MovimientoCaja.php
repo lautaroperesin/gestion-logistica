@@ -6,14 +6,100 @@ class MovimientoCaja {
         $this->conn = $conn;
     }
 
-    public function obtenerTodos() {
-        $stmt = $this->conn->prepare("SELECT mc.*, f.numero_factura, mp.metodo_pago, c.cliente 
-                                     FROM movimientos_caja mc 
-                                     JOIN facturas f ON mc.id_factura = f.id_factura 
-                                     JOIN metodos_pago mp ON mc.id_metodo_pago = mp.id_metodo_pago 
-                                     JOIN clientes c ON f.id_cliente = c.id_cliente 
-                                     WHERE mc.deleted = 0 
-                                     ORDER BY mc.fecha_pago DESC");
+    public function contarTotal($busqueda = []) {
+        $sql = "SELECT COUNT(*) as total 
+                FROM movimientos_caja mc 
+                JOIN facturas f ON mc.id_factura = f.id_factura 
+                JOIN clientes c ON f.id_cliente = c.id_cliente 
+                WHERE mc.deleted = 0";
+        
+        $params = [];
+        $types = '';
+        
+        // Aplicar filtros de búsqueda
+        if (!empty($busqueda['numero_factura'])) {
+            $sql .= " AND f.numero_factura LIKE ?";
+            $params[] = '%' . $busqueda['numero_factura'] . '%';
+            $types .= 's';
+        }
+        
+        if (!empty($busqueda['cliente'])) {
+            $sql .= " AND c.cliente LIKE ?";
+            $params[] = '%' . $busqueda['cliente'] . '%';
+            $types .= 's';
+        }
+        
+        if (!empty($busqueda['fecha_desde'])) {
+            $sql .= " AND DATE(mc.fecha_pago) >= ?";
+            $params[] = $busqueda['fecha_desde'];
+            $types .= 's';
+        }
+        
+        if (!empty($busqueda['fecha_hasta'])) {
+            $sql .= " AND DATE(mc.fecha_pago) <= ?";
+            $params[] = $busqueda['fecha_hasta'];
+            $types .= 's';
+        }
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+        
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc()['total'];
+    }
+
+    public function obtenerTodos($porPagina = 10, $pagina = 1, $busqueda = []) {
+        $offset = ($pagina - 1) * $porPagina;
+        
+        $sql = "SELECT mc.*, f.numero_factura, mp.metodo_pago, c.cliente 
+                FROM movimientos_caja mc 
+                JOIN facturas f ON mc.id_factura = f.id_factura 
+                JOIN metodos_pago mp ON mc.id_metodo_pago = mp.id_metodo_pago 
+                JOIN clientes c ON f.id_cliente = c.id_cliente 
+                WHERE mc.deleted = 0 ";
+        
+        $params = [];
+        $types = '';
+        
+        // Aplicar filtros de búsqueda
+        if (!empty($busqueda['numero_factura'])) {
+            $sql .= " AND f.numero_factura LIKE ?";
+            $params[] = '%' . $busqueda['numero_factura'] . '%';
+            $types .= 's';
+        }
+        
+        if (!empty($busqueda['cliente'])) {
+            $sql .= " AND c.cliente LIKE ?";
+            $params[] = '%' . $busqueda['cliente'] . '%';
+            $types .= 's';
+        }
+        
+        if (!empty($busqueda['fecha_desde'])) {
+            $sql .= " AND DATE(mc.fecha_pago) >= ?";
+            $params[] = $busqueda['fecha_desde'];
+            $types .= 's';
+        }
+        
+        if (!empty($busqueda['fecha_hasta'])) {
+            $sql .= " AND DATE(mc.fecha_pago) <= ?";
+            $params[] = $busqueda['fecha_hasta'];
+            $types .= 's';
+        }
+        
+        $sql .= " ORDER BY mc.fecha_pago DESC LIMIT ? OFFSET ?";
+        $params[] = $porPagina;
+        $params[] = $offset;
+        $types .= 'ii';
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+        
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }

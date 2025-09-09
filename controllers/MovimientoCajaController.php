@@ -12,7 +12,27 @@ class MovimientoCajaController {
     }
 
     public function index() {
-        $movimientos = $this->movimientoCajaModel->obtenerTodos();
+        $porPagina = 10;
+        $pagina = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        
+        // Obtener parámetros de búsqueda
+        $filtros = [
+            'numero_factura' => $_GET['numero_factura'] ?? '',
+            'cliente' => $_GET['cliente'] ?? '',
+            'fecha_desde' => $_GET['fecha_desde'] ?? '',
+            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+        ];
+        
+        // Obtener el total de movimientos para la paginación
+        $totalMovimientos = $this->movimientoCajaModel->contarTotal($filtros);
+        $totalPaginas = ceil($totalMovimientos / $porPagina);
+        
+        // Asegurarse de que la página actual esté dentro del rango válido
+        $pagina = max(1, min($pagina, $totalPaginas));
+        
+        // Obtener los movimientos para la página actual
+        $movimientos = $this->movimientoCajaModel->obtenerTodos($porPagina, $pagina, $filtros);
+        
         include __DIR__ . '/../views/layouts/header.php';
         include __DIR__ . '/../views/movimientos_caja/index.php';
         include __DIR__ . '/../views/layouts/footer.php';
