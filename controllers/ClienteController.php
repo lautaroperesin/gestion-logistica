@@ -12,13 +12,19 @@ class ClienteController {
     }
 
     public function index() {
-        $busqueda = $_GET['buscar'] ?? '';
+        $buscar = $_GET['buscar'] ?? '';
+        $pagina = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $porPagina = 10; // Número de clientes por página
         
-        if (!empty($busqueda)) {
-            $clientes = $this->cliente->buscarPorNombre($busqueda);
-        } else {
-            $clientes = $this->cliente->obtenerTodos();
-        }
+        // Obtener el total de clientes para la paginación
+        $totalClientes = $this->cliente->contarTotal($buscar);
+        $totalPaginas = ceil($totalClientes / $porPagina);
+        
+        // Asegurarse de que la página actual esté dentro del rango válido
+        $pagina = max(1, min($pagina, $totalPaginas));
+        
+        // Obtener los clientes para la página actual
+        $clientes = $this->cliente->obtenerTodos($porPagina, $pagina, $buscar);
         
         include __DIR__ . '/../views/layouts/header.php';
         include __DIR__ . '/../views/clientes/index.php';

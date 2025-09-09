@@ -6,9 +6,38 @@ class Cliente {
         $this->conn = $conexion;
     }
 
-    public function obtenerTodos() {
-        $sql = "SELECT * FROM clientes WHERE deleted = 0 ORDER BY cliente ASC";
-        return $this->conn->query($sql);
+    public function contarTotal($buscar = '') {
+        $sql = "SELECT COUNT(*) as total FROM clientes WHERE deleted = 0";
+        
+        if (!empty($buscar)) {
+            $buscar = "%$buscar%";
+            $sql .= " AND cliente LIKE ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("s", $buscar);
+            $stmt->execute();
+            return $stmt->get_result()->fetch_assoc()['total'];
+        }
+        
+        $result = $this->conn->query($sql);
+        return $result->fetch_assoc()['total'];
+    }
+
+    public function obtenerTodos($porPagina = 10, $pagina = 1, $buscar = '') {
+        $offset = ($pagina - 1) * $porPagina;
+        
+        if (!empty($buscar)) {
+            $buscar = "%$buscar%";
+            $sql = "SELECT * FROM clientes WHERE cliente LIKE ? AND deleted = 0 ORDER BY cliente ASC LIMIT ? OFFSET ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("sii", $buscar, $porPagina, $offset);
+        } else {
+            $sql = "SELECT * FROM clientes WHERE deleted = 0 ORDER BY cliente ASC LIMIT ? OFFSET ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("ii", $porPagina, $offset);
+        }
+        
+        $stmt->execute();
+        return $stmt->get_result();
     }
 
 
@@ -37,11 +66,5 @@ class Cliente {
         return $stmt->execute();
     }
     
-    public function buscarPorNombre($termino) {
-        $termino = "%$termino%";
-        $stmt = $this->conn->prepare("SELECT * FROM clientes WHERE cliente LIKE ? AND deleted = 0 ORDER BY cliente ASC");
-        $stmt->bind_param("s", $termino);
-        $stmt->execute();
-        return $stmt->get_result();
-    }
+    // Este método ya no es necesario ya que la búsqueda está integrada en obtenerTodos
 }

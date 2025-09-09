@@ -86,6 +86,73 @@
                                         <?php endwhile; ?>
                                     </tbody>
                                 </table>
+                                
+                                <?php if ($totalPaginas > 1): ?>
+                                <nav class="mt-4">
+                                    <ul class="pagination justify-content-center">
+                                        <li class="page-item <?= $pagina <= 1 ? 'disabled' : '' ?>">
+                                            <a class="page-link" href="?route=clientes&page=<?= $pagina - 1 ?><?= !empty($buscar) ? '&buscar=' . urlencode($buscar) : '' ?>">
+                                                <i class="fas fa-chevron-left"></i> Anterior
+                                            </a>
+                                        </li>
+                                        
+                                        <?php 
+                                        // Mostrar máximo 5 números de página alrededor de la página actual
+                                        $inicio = max(1, $pagina - 2);
+                                        $fin = min($totalPaginas, $pagina + 2);
+                                        
+                                        // Ajustar si estamos cerca del inicio o del final
+                                        if ($fin - $inicio < 4) {
+                                            if ($inicio === 1) {
+                                                $fin = min(5, $totalPaginas);
+                                            } else {
+                                                $inicio = max(1, $totalPaginas - 4);
+                                            }
+                                        }
+                                        
+                                        // Mostrar primera página si no está en el rango
+                                        if ($inicio > 1): ?>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?route=clientes&page=1<?= !empty($buscar) ? '&buscar=' . urlencode($buscar) : '' ?>">1</a>
+                                            </li>
+                                            <?php if ($inicio > 2): ?>
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">...</span>
+                                                </li>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                        
+                                        <?php for ($i = $inicio; $i <= $fin; $i++): ?>
+                                            <li class="page-item <?= $i == $pagina ? 'active' : '' ?>">
+                                                <a class="page-link" href="?route=clientes&page=<?= $i ?><?= !empty($buscar) ? '&buscar=' . urlencode($buscar) : '' ?>">
+                                                    <?= $i ?>
+                                                </a>
+                                            </li>
+                                        <?php endfor; ?>
+                                        
+                                        <?php // Mostrar última página si no está en el rango
+                                        if ($fin < $totalPaginas): ?>
+                                            <?php if ($fin < $totalPaginas - 1): ?>
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">...</span>
+                                                </li>
+                                            <?php endif; ?>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?route=clientes&page=<?= $totalPaginas ?><?= !empty($buscar) ? '&buscar=' . urlencode($buscar) : '' ?>">
+                                                    <?= $totalPaginas ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                        
+                                        <li class="page-item <?= $pagina >= $totalPaginas ? 'disabled' : '' ?>">
+                                            <a class="page-link" href="?route=clientes&page=<?= $pagina + 1 ?><?= !empty($buscar) ? '&buscar=' . urlencode($buscar) : '' ?>">
+                                                Siguiente <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                                <?php endif; ?>
+                                
                             </div>
                         <?php else: ?>
                             <div class="text-center py-5">
