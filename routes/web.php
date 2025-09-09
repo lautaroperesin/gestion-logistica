@@ -230,7 +230,11 @@ switch ($route) {
         break;
     case 'facturas_create':
         $facturaController = new FacturaController();
-        $facturaController->create();
+        if (isset($_GET['id_envio'])) {
+            $facturaController->createFromEnvio($_GET['id_envio']);
+        } else {
+            $facturaController->create();
+        }
         break;
     case 'facturas_store':
         $facturaController = new FacturaController();

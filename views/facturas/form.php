@@ -7,10 +7,10 @@ require_once __DIR__ . '/../layouts/header.php';
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h2 class="mb-0"><?php echo isset($factura) ? 'Editar Factura' : 'Nueva Factura'; ?></h2>
+                    <h2 class="mb-0"><?php echo (isset($fromEnvio) && $fromEnvio) ? 'Nueva Factura' : (isset($factura) ? 'Editar Factura' : 'Nueva Factura'); ?></h2>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="<?php echo isset($factura) ? '?route=facturas_update' : '?route=facturas_store'; ?>">
+                    <form method="POST" action="<?php echo (isset($fromEnvio) && $fromEnvio) ? '?route=facturas_store' : (isset($factura) ? '?route=facturas_update' : '?route=facturas_store'); ?>">
                         <?php if (isset($factura)): ?>
                             <input type="hidden" name="id_factura" value="<?php echo $factura['id_factura']; ?>">
                         <?php endif; ?>
@@ -35,15 +35,38 @@ require_once __DIR__ . '/../layouts/header.php';
 
                         <div class="mb-3">
                             <label for="id_envio" class="form-label">Envío</label>
-                            <select class="form-select" id="id_envio" name="id_envio" required>
-                                <option value="">Seleccione un envío</option>
-                                <?php foreach ($envios as $envio): ?>
-                                    <option value="<?= $envio['id_envio'] ?>"
-                                            <?php echo isset($factura) && $factura['id_envio'] == $envio['id_envio'] ? 'selected' : ''; ?>>
-                                        <?= htmlspecialchars($envio['numero_seguimiento']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
+                            <?php if (isset($fromEnvio) && $fromEnvio): ?>
+                                <input type="hidden" name="id_envio" value="<?= $factura['id_envio'] ?>">
+                                <input type="text" class="form-control" value="<?= htmlspecialchars($envio['numero_seguimiento']) ?>" readonly>
+                            <?php else: ?>
+                                <select class="form-select" id="id_envio" name="id_envio" required>
+                                    <option value="">Seleccione un envío</option>
+                                    <?php foreach ($envios as $envio): ?>
+                                        <option value="<?= $envio['numero_seguimiento'] ?>"
+                                                <?php echo isset($factura) && $factura['id_envio'] == $envio['id_envio'] ? 'selected' : ''; ?>>
+                                            <?= htmlspecialchars($envio['numero_seguimiento']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_cliente" class="form-label">Cliente</label>
+                            <?php if (isset($fromEnvio) && $fromEnvio): ?>
+                                <input type="hidden" name="id_cliente" value="<?= $factura['id_cliente'] ?>">
+                                <input type="text" class="form-control" value="<?= htmlspecialchars($factura['cliente'] ?? '') ?>" readonly>
+                            <?php else: ?>
+                                <select class="form-select" id="id_cliente" name="id_cliente" required>
+                                    <option value="">Seleccione un cliente</option>
+                                    <?php foreach ($clientes as $cliente): ?>
+                                        <option value="<?= $cliente['id_cliente'] ?>"
+                                                <?php echo isset($factura) && $factura['id_cliente'] == $cliente['id_cliente'] ? 'selected' : ''; ?>>
+                                            <?= htmlspecialchars($cliente['cliente']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            <?php endif; ?>
                         </div>
 
                         <div class="mb-3">
@@ -63,19 +86,6 @@ require_once __DIR__ . '/../layouts/header.php';
                         </div>
 
                         <div class="mb-3">
-                            <label for="id_cliente" class="form-label">Cliente</label>
-                            <select class="form-select" id="id_cliente" name="id_cliente" required>
-                                <option value="">Seleccione un cliente</option>
-                                <?php foreach ($clientes as $cliente): ?>
-                                    <option value="<?= $cliente['id_cliente'] ?>"
-                                            <?php echo isset($factura) && $factura['id_cliente'] == $cliente['id_cliente'] ? 'selected' : ''; ?>>
-                                        <?= $cliente['cliente'] ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
                             <label for="subtotal" class="form-label">Subtotal</label>
                             <input type="number" step="0.01" class="form-control" id="subtotal" name="subtotal" 
                                    value="<?php echo isset($factura) ? $factura['subtotal'] : ''; ?>" required>
@@ -83,8 +93,13 @@ require_once __DIR__ . '/../layouts/header.php';
 
                         <div class="mb-3">
                             <label for="iva" class="form-label">IVA (%)</label>
-                            <input type="number" step="0.01" class="form-control" id="iva" name="iva" 
-                                   value="<?php echo isset($factura) ? $factura['iva'] : '21'; ?>" required>
+                            <!-- detectar si es una factura generada desde un envio -->
+                            <?php if (isset($fromEnvio) && $fromEnvio): ?>
+                                <input type="number" step="0.01" class="form-control" id="iva" name="iva" value="21" required>
+                            <?php else: ?>
+                                <input type="number" step="0.01" class="form-control" id="iva" name="iva" 
+                                       value="<?php echo isset($factura) ? $factura['iva'] : '21'; ?>" required>
+                            <?php endif; ?>
                         </div>
 
                         <div class="mb-3">

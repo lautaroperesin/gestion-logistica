@@ -103,10 +103,15 @@ function getStatusBadgeClass($status) {
                             <td>$<?= number_format($envio['costo_total'], 2) ?></td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="?route=envios_edit&id_envio=<?= $envio['id_envio'] ?>" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
+                                    <a href="?route=envios_edit&id_envio=<?= $envio['id_envio'] ?>" class="btn btn-sm btn-primary" title="Editar"><i class="fas fa-edit"></i></a>
+                                    <a href="?route=facturas_create&id_envio=<?= $envio['id_envio'] ?>" class="btn btn-sm btn-success" title="Generar Factura">
+                                        <i class="fas fa-file-invoice-dollar"></i>
+                                    </a>
                                     <form action="?route=envios_delete" method="POST" class="d-inline">
                                         <input type="hidden" name="id_envio" value="<?= $envio['id_envio'] ?>">
-                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar este envío?')"><i class="fas fa-trash"></i></button>
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar" onclick="return confirm('¿Está seguro de eliminar este envío?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </form>
                                 </div>
                             </td>

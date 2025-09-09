@@ -49,6 +49,50 @@ class FacturaController {
         include __DIR__ . '/../views/layouts/footer.php';
     }
 
+    public function createFromEnvio($idEnvio) {
+        $envioModel = new Envio($this->db->getConnection());
+        $clienteModel = new Cliente($this->db->getConnection());
+        
+        // Obtener datos del envío
+        $envio = $envioModel->obtenerPorId($idEnvio);
+        
+        if (!$envio) {
+            $_SESSION['error'] = 'El envío especificado no existe';
+            header('Location: ?route=envios');
+            exit();
+        }
+        
+        // Obtener datos del cliente
+        $cliente = $clienteModel->obtenerPorId($envio['id_cliente']);
+        
+        // Generar número de factura único
+        $numeroFactura = 'FAC-' . date('Ymd') . '-' . $envio['id_envio'];
+        
+        // Preparar datos para la factura
+        $factura = [
+            'id_factura' => null, // Asegurar que es nueva factura
+            'numero_factura' => $numeroFactura,
+            'id_envio' => $envio['id_envio'],
+            'id_cliente' => $envio['id_cliente'],
+            'cliente' => $cliente['cliente'],
+            'fecha_emision' => date('Y-m-d'),
+            'fecha_vencimiento' => date('Y-m-d', strtotime('+30 days')),
+            'subtotal' => $envio['costo_total'],
+            'impuestos' => $envio['costo_total'] * 0.21, // 21% de impuestos
+            'total' => $envio['costo_total'] * 1.21,
+            'estado' => '1', // 1 = Emitida
+            'concepto' => 'Transporte de envío #' . $envio['numero_seguimiento']
+        ];
+        
+        $clientes = $clienteModel->obtenerTodos();
+        $envios = (new Envio($this->db->getConnection()))->obtenerTodos();
+        $fromEnvio = true; // Flag to indicate this form was loaded from a shipment
+        
+        include __DIR__ . '/../views/layouts/header.php';
+        include __DIR__ . '/../views/facturas/form.php';
+        include __DIR__ . '/../views/layouts/footer.php';
+    }
+
     public function store() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id_envio = $_POST['id_envio'] ?? null;
