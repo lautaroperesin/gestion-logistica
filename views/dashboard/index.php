@@ -191,16 +191,16 @@
                                     <small>Gestionar flota</small>
                                 </a>
                             </div>
-                            
-                            <!-- Reportes -->
+
+                            <!-- Agregar ubicacion -->
                             <div class="col-xl-2 col-md-4 col-6">
-                                <a href="#" class="btn btn-light btn-hover-zoom w-100 h-100 p-3 border-0 shadow-sm text-center d-flex flex-column align-items-center justify-content-center"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Ver reportes" onclick="alert('Módulo de reportes en desarrollo')">
-                                    <div class="icon-wrapper bg-danger bg-opacity-10 rounded-circle p-3 mb-2">
-                                        <i class="fas fa-chart-bar fa-2x text-danger"></i>
+                                <a href="?route=ubicaciones_create" class="btn btn-light btn-hover-zoom w-100 h-100 p-3 border-0 shadow-sm text-center d-flex flex-column align-items-center justify-content-center"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Agregar nueva ubicación">
+                                    <div class="icon-wrapper bg-info bg-opacity-10 rounded-circle p-3 mb-2">
+                                        <i class="fas fa-map-marker-alt fa-2x text-info"></i>
                                     </div>
-                                    <div class="fw-bold">Reportes</div>
-                                    <small>Ver estadísticas</small>
+                                    <div class="fw-bold">Ubicaciones</div>
+                                    <small>Agregar nueva ubicación</small>
                                 </a>
                             </div>
                         </div>
