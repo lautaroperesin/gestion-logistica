@@ -121,12 +121,12 @@ class DashboardController {
                     $stats['envios_mes_actual'] = (int)$row['total'];
                 }
 
-                // Ingresos del mes actual
+                // Ingresos del mes actual - suma de todos los movimentos de caja del mes
                 $result = $conn->query("
-                    SELECT COALESCE(SUM(costo_total), 0) as total 
-                    FROM envios 
-                    WHERE MONTH(fecha_salida) = MONTH(CURRENT_DATE()) 
-                    AND YEAR(fecha_salida) = YEAR(CURRENT_DATE())
+                    SELECT COALESCE(SUM(monto), 0) as total 
+                    FROM movimientos_caja 
+                    WHERE MONTH(fecha_pago) = MONTH(CURRENT_DATE()) 
+                    AND YEAR(fecha_pago) = YEAR(CURRENT_DATE())
                     AND deleted = 0
                 ") or die($conn->error);
                 
