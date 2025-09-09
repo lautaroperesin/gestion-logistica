@@ -241,18 +241,4 @@ class Envio {
         $stmt->bind_param("i", $id_envio);
         return $stmt->execute();
     }
-
-    public function obtenerPorEstado($estado) {
-        $stmt = $this->conn->prepare("SELECT * FROM envios WHERE id_estado_envio = ? AND deleted = 0 ORDER BY fecha_creacion_envio DESC");
-        $stmt->bind_param("i", $estado);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    }
-
-    public function obtenerPorCliente($id_cliente) {
-        $stmt = $this->conn->prepare("SELECT * FROM envios WHERE id_cliente = ? AND deleted = 0 ORDER BY fecha_creacion_envio DESC");
-        $stmt->bind_param("i", $id_cliente);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    }
 }
