@@ -33,7 +33,7 @@ class FacturaController {
         $paginacion = $resultado['paginacion'];
         
         // Obtener lista de clientes para el filtro
-        $clientes = (new Cliente($this->db->getConnection()))->obtenerTodos();
+        $clientes = (new Cliente($this->db->getConnection()))->obtenerTodos(100);
         
         // Pasar datos a la vista
         include __DIR__ . '/../views/layouts/header.php';
@@ -42,8 +42,8 @@ class FacturaController {
     }
 
     public function create() {
-        $envios = (new Envio($this->db->getConnection()))->obtenerTodos();
-        $clientes = (new Cliente($this->db->getConnection()))->obtenerTodos();
+        $envios = (new Envio($this->db->getConnection()))->obtenerTodos(100);
+        $clientes = (new Cliente($this->db->getConnection()))->obtenerTodos(100);
         include __DIR__ . '/../views/layouts/header.php';
         include __DIR__ . '/../views/facturas/form.php';
         include __DIR__ . '/../views/layouts/footer.php';
@@ -84,7 +84,7 @@ class FacturaController {
             'concepto' => 'Transporte de envío #' . $envio['numero_seguimiento']
         ];
         
-        $clientes = $clienteModel->obtenerTodos();
+        $clientes = $clienteModel->obtenerTodos(100);
         $envios = (new Envio($this->db->getConnection()))->obtenerTodos();
         $fromEnvio = true; // Flag to indicate this form was loaded from a shipment
         
@@ -117,8 +117,8 @@ class FacturaController {
         if ($id) {
             $factura = $this->facturaModel->obtenerPorId($id);
             if ($factura) {
-                $envios = (new Envio($this->db->getConnection()))->obtenerTodos();
-                $clientes = (new Cliente($this->db->getConnection()))->obtenerTodos();
+                $envios = (new Envio($this->db->getConnection()))->obtenerTodos(100);
+                $clientes = (new Cliente($this->db->getConnection()))->obtenerTodos(100);
                 include __DIR__ . '/../views/layouts/header.php';
                 include __DIR__ . '/../views/facturas/form.php';
                 include __DIR__ . '/../views/layouts/footer.php';

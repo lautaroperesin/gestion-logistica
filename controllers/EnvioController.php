@@ -56,12 +56,12 @@ class EnvioController {
         $ubicacionModel = new Ubicacion($this->db->getConnection());
         $estadoEnvioModel = new EstadoEnvio($this->db->getConnection());
 
-        $conductores = $conductorModel->obtenerTodos();
-        $clientes = $clienteModel->obtenerTodos();
-        $tiposCarga = $tipoCargaModel->obtenerTodos();
-        $vehiculos = $vehiculoModel->obtenerTodos();
-        $ubicaciones = $ubicacionModel->obtenerTodos();
-        $estados = $estadoEnvioModel->obtenerTodos();
+        $conductores = $conductorModel->obtenerTodos(100);
+        $clientes = $clienteModel->obtenerTodos(100);
+        $tiposCarga = $tipoCargaModel->obtenerTodos(100);
+        $vehiculos = $vehiculoModel->obtenerTodos(100);
+        $ubicaciones = $ubicacionModel->obtenerTodos(100);
+        $estados = $estadoEnvioModel->obtenerTodos(100);
 
         include __DIR__ . '/../views/layouts/header.php';
         include __DIR__ . '/../views/envios/form.php';
@@ -104,10 +104,10 @@ class EnvioController {
                 $estadoEnvioModel = new EstadoEnvio($this->db->getConnection());
 
                 $conductores = $conductorModel->obtenerTodos();
-                $clientes = $clienteModel->obtenerTodos();
+                $clientes = $clienteModel->obtenerTodos(100);
                 $tiposCarga = $tipoCargaModel->obtenerTodos();
                 $vehiculos = $vehiculoModel->obtenerTodos();
-                $ubicaciones = $ubicacionModel->obtenerTodos();
+                $ubicaciones = $ubicacionModel->obtenerTodos(100);
                 $estados = $estadoEnvioModel->obtenerTodos();
 
                 include __DIR__ . '/../views/layouts/header.php';
@@ -163,5 +163,22 @@ class EnvioController {
             header('Location: ?route=envios');
             exit;
         }
+    }
+
+    public function actualizarEstado() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_envio']) && isset($_POST['nuevo_estado'])) {
+            $idEnvio = $_POST['id_envio'];
+            $nuevoEstado = $_POST['nuevo_estado'];
+            
+            $resultado = $this->envioModel->actualizarEstado($idEnvio, $nuevoEstado);
+            
+            header('Content-Type: application/json');
+            echo json_encode($resultado);
+            exit;
+        }
+        
+        header('HTTP/1.1 400 Bad Request');
+        echo json_encode(['success' => false, 'message' => 'Solicitud inválida']);
+        exit;
     }
 }
