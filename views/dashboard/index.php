@@ -106,11 +106,10 @@
                                 <div class="h4 mb-0 font-weight-bold text-gray-800">
                                     <?= number_format($stats['clientes'] ?? 0, 0, ',', '.') ?>
                                 </div>
-                                <div class="mt-2">
-                                    <span class="badge bg-warning bg-opacity-10 text-warning">
-                                        <i class="fas fa-users me-1"></i> 
-                                        <?= count($stats['top_clientes'] ?? []) ?> destacados
-                                    </span>
+                                <div>
+                                    <a href="?route=clientes" class="text-xs text-warning">
+                                        <i class="fas fa-arrow-circle-right me-1"></i> Ver clientes
+                                    </a>
                                 </div>
                             </div>
                             <div class="col-auto">

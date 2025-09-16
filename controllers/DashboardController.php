@@ -28,7 +28,6 @@ class DashboardController {
             'ingresos_mes_actual' => '0.00',
             'envios_pendientes' => 0,
             'carga_vehiculos' => [],
-            'top_clientes' => [],
             'envios_por_mes' => [],
             'estados_envio' => []
         ];
@@ -188,16 +187,6 @@ class DashboardController {
                     ORDER BY total_gastado DESC
                     LIMIT 5
                 ") or die($conn->error);
-                
-                if ($result) {
-                    while ($row = $result->fetch_assoc()) {
-                        $stats['top_clientes'][] = [
-                            'cliente' => $row['cliente'],
-                            'total_envios' => (int)$row['total_envios'],
-                            'total_gastado' => number_format($row['total_gastado'], 2, '.', '')
-                        ];
-                    }
-                }
 
                 // Estadísticas de envíos por mes (últimos 6 meses)
                 $result = $conn->query("
