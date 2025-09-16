@@ -47,6 +47,11 @@ switch ($route) {
         $usuarioController->registro();
         break;
 
+    // Ruta de Configuración
+    case 'configuracion':
+        include __DIR__ . '/../views/config/index.php';
+        break;
+
     // Rutas del Dashboard
     case 'home':
     case 'dashboard':

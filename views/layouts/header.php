@@ -122,6 +122,11 @@
                                 <i class="fas fa-boxes"></i> Tipos de Carga
                             </a>
                         </li>
+                        <li class="nav-item mt-4">
+                            <a class="nav-link <?php echo isCurrentRoute('configuracion') ? 'active' : ''; ?>" href="?route=configuracion">
+                                <i class="fas fa-cog"></i> Configuración
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>

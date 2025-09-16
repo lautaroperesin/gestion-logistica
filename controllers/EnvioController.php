@@ -181,4 +181,44 @@ class EnvioController {
         echo json_encode(['success' => false, 'message' => 'Solicitud inválida']);
         exit;
     }
+
+    /**
+     * Obtiene todos los estados de envío disponibles
+     * 
+     * @return array Lista de estados de envío
+     */
+    public function obtenerEstadosEnvio() {
+        $estadoEnvioModel = new EstadoEnvio($this->db->getConnection());
+        return $estadoEnvioModel->obtenerTodos();
+    }
+
+    /**
+     * Agrega un nuevo estado de envío
+     * 
+     * @param string $nombre Nombre del nuevo estado
+     * @return array Resultado de la operación
+     */
+    public function agregarEstadoEnvio($nombre) {
+        if (empty(trim($nombre))) {
+            return ['success' => false, 'message' => 'El nombre del estado no puede estar vacío'];
+        }
+
+        $estadoEnvioModel = new EstadoEnvio($this->db->getConnection());
+        return $estadoEnvioModel->crear($nombre);
+    }
+
+    /**
+     * Elimina un estado de envío (soft delete)
+     * 
+     * @param int $id ID del estado a eliminar
+     * @return bool Resultado de la operación
+     */
+    public function eliminarEstadoEnvio($id) {
+        if (!is_numeric($id) || $id <= 0) {
+            return false;
+        }
+
+        $estadoEnvioModel = new EstadoEnvio($this->db->getConnection());
+        return $estadoEnvioModel->eliminar($id);
+    }
 }
