@@ -248,15 +248,6 @@ class DashboardController {
             error_log($error);
         }
 
-        // Contar tipos de carga (si existe la tabla)
-        $result = $conn->query("SHOW TABLES LIKE 'tipos_carga'");
-        if ($result && $result->num_rows > 0) {
-            $result = $conn->query("SELECT COUNT(*) as total FROM tipos_carga");
-            if ($result && $row = $result->fetch_assoc()) {
-                $stats['tipos_carga'] = $row['total'];
-            }
-        }
-
         return $stats;
         }
     }
