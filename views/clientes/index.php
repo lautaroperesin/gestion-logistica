@@ -3,9 +3,16 @@
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1><i class="fas fa-users"></i> Lista de Clientes</h1>
-                    <a href="?route=clientes_create" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Nuevo Cliente
-                    </a>
+                    <div>
+                        <a href="?route=clientes_exportar_excel<?= !empty($buscar) ? '&buscar=' . urlencode($buscar) : '' ?>" 
+                           class="btn btn-success me-2" 
+                           title="Exportar a Excel">
+                            <i class="fas fa-file-excel"></i> Exportar a Excel
+                        </a>
+                        <a href="?route=clientes_create" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Nuevo Cliente
+                        </a>
+                    </div>
                 </div>
                 
                 <!-- Barra de búsqueda -->

@@ -84,6 +84,10 @@ switch ($route) {
         $clienteController = new ClienteController();
         $clienteController->delete();
         break;
+    case 'clientes_exportar_excel':
+        $clienteController = new ClienteController();
+        $clienteController->exportarExcel();
+        break;
     
     // Rutas de conductores
     case 'conductores':
