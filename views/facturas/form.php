@@ -42,7 +42,7 @@ require_once __DIR__ . '/../layouts/header.php';
                                 <select class="form-select" id="id_envio" name="id_envio" required>
                                     <option value="">Seleccione un envío</option>
                                     <?php foreach ($envios as $envio): ?>
-                                        <option value="<?= $envio['numero_seguimiento'] ?>"
+                                        <option value="<?= $envio['id_envio'] ?>"
                                                 <?php echo isset($factura) && $factura['id_envio'] == $envio['id_envio'] ? 'selected' : ''; ?>>
                                             <?= htmlspecialchars($envio['numero_seguimiento']) ?>
                                         </option>

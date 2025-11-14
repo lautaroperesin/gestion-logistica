@@ -57,7 +57,7 @@ require_once __DIR__ . '/../layouts/header.php';
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped text-end">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -82,10 +82,13 @@ require_once __DIR__ . '/../layouts/header.php';
                                 <td><?= htmlspecialchars($movimiento['observaciones']) ?></td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="?route=movimientos_caja_edit&id_movimiento=<?= $movimiento['id_movimiento'] ?>" class="btn btn-sm btn-primary">
+                                        <a href="?route=movimientos_caja_recibo_pdf&id_movimiento=<?= $movimiento['id_movimiento'] ?>" class="btn btn-sm btn-success" title="Imprimir Recibo PDF" target="_blank">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </a>
+                                        <a href="?route=movimientos_caja_edit&id_movimiento=<?= $movimiento['id_movimiento'] ?>" class="btn btn-sm btn-primary" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="?route=movimientos_caja_delete&id_movimiento=<?= $movimiento['id_movimiento'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este movimiento?')">
+                                        <a href="?route=movimientos_caja_delete&id_movimiento=<?= $movimiento['id_movimiento'] ?>" class="btn btn-sm btn-danger" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar este movimiento?')">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                     </div>

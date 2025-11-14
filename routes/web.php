@@ -325,6 +325,10 @@ switch ($route) {
         $movimientoCajaController = new MovimientoCajaController();
         $movimientoCajaController->getByFactura();
         break;
+    case 'movimientos_caja_recibo_pdf':
+        $movimientoCajaController = new MovimientoCajaController();
+        $movimientoCajaController->exportarReciboPdf();
+        break;
 
     // Ruta por defecto
     default:

@@ -197,6 +197,21 @@ class FacturaController {
             exit;
         }
 
+        // Obtener datos de la empresa desde la tabla config
+        $stmtConfig = $this->db->getConnection()->prepare("SELECT nombre_empresa, telefono_empresa, ubicacion_empresa, email_empresa FROM config LIMIT 1");
+        $stmtConfig->execute();
+        $config = $stmtConfig->get_result()->fetch_assoc();
+        
+        // Valores por defecto si no hay configuración
+        $nombre_empresa = $config['nombre_empresa'] ?? 'Sistema de Gestión Logística';
+        $telefono_empresa = $config['telefono_empresa'] ?? '';
+        $ubicacion_empresa = $config['ubicacion_empresa'] ?? '';
+        $email_empresa = $config['email_empresa'] ?? '';
+
+        // Obtener datos completos del cliente
+        $clienteModel = new Cliente($this->db->getConnection());
+        $cliente = $clienteModel->obtenerPorId($factura['id_cliente']);
+
         // Incluir la biblioteca TCPDF
         require_once __DIR__ . '/../vendor/tecnickcom/tcpdf/tcpdf.php';
 
@@ -204,8 +219,8 @@ class FacturaController {
         $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
         // Configuración del documento
-        $pdf->SetCreator('Sistema de Gestión Logística');
-        $pdf->SetAuthor('Sistema de Gestión Logística');
+        $pdf->SetCreator($nombre_empresa);
+        $pdf->SetAuthor($nombre_empresa);
         $pdf->SetTitle('Factura ' . $factura['numero_factura']);
         $pdf->SetSubject('Factura ' . $factura['numero_factura']);
         $pdf->SetKeywords('Factura, PDF, ' . $factura['numero_factura']);
@@ -221,36 +236,64 @@ class FacturaController {
         $html = '<!-- CSS -->
         <style>
             body { font-family: helvetica; font-size: 10pt; }
-            .header { text-align: center; margin-bottom: 20px; }
-            .header h1 { font-size: 18pt; margin: 0; }
-            .header p { margin: 5px 0; }
-            .info { margin-bottom: 15px; }
-            .info p { margin: 3px 0; }
-            table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-            th { background-color: #f2f2f2; text-align: left; padding: 8px; border: 1px solid #ddd; }
-            td { padding: 8px; border: 1px solid #ddd; }
+            .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 15px; }
+            .header h1 { font-size: 20pt; margin: 0; color: #333; }
+            .header .company-name { font-size: 14pt; font-weight: bold; margin: 10px 0 5px 0; color: #0066cc; }
+            .header p { margin: 3px 0; font-size: 9pt; }
+            .invoice-info { margin: 20px 0; }
+            .two-columns { width: 100%; }
+            .two-columns td { vertical-align: top; padding: 10px; }
+            .info-box { border: 1px solid #ddd; padding: 10px; background-color: #f9f9f9; }
+            .info-box h3 { margin: 0 0 10px 0; font-size: 11pt; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+            .info-box p { margin: 5px 0; font-size: 9pt; }
+            table.items { width: 100%; border-collapse: collapse; margin: 20px 0; }
+            table.items th { background-color: #0066cc; color: white; text-align: left; padding: 10px; border: 1px solid #0066cc; font-size: 10pt; }
+            table.items td { padding: 10px; border: 1px solid #ddd; font-size: 9pt; }
             .text-right { text-align: right; }
-            .total { font-weight: bold; font-size: 12pt; margin-top: 10px; }
-            .footer { margin-top: 30px; font-size: 8pt; text-align: center; color: #666; }
+            .totals { margin-top: 20px; }
+            .totals table { width: 50%; margin-left: auto; }
+            .totals td { padding: 5px 10px; }
+            .total-row { font-weight: bold; font-size: 12pt; background-color: #f0f0f0; }
+            .footer { margin-top: 30px; font-size: 8pt; text-align: center; color: #666; border-top: 1px solid #ddd; padding-top: 10px; }
         </style>
         
-        <!-- Encabezado -->
+        <!-- Encabezado de la empresa -->
         <div class="header">
-            <h1>FACTURA #' . htmlspecialchars($factura['numero_factura']) . '</h1>
-            <p>Sistema de Gestión Logística</p>
-            <p>Fecha de emisión: ' . date('d/m/Y', strtotime($factura['fecha_emision'])) . '</p>
-            <p>Vencimiento: ' . ($factura['fecha_vencimiento'] ? date('d/m/Y', strtotime($factura['fecha_vencimiento'])) : 'No especificado') . '</p>
+            <div class="company-name">' . htmlspecialchars($nombre_empresa) . '</div>
+            ' . ($ubicacion_empresa ? '<p><strong>Dirección:</strong> ' . htmlspecialchars($ubicacion_empresa) . '</p>' : '') . '
+            ' . ($telefono_empresa ? '<p><strong>Teléfono:</strong> ' . htmlspecialchars($telefono_empresa) . '</p>' : '') . '
+            ' . ($email_empresa ? '<p><strong>Email:</strong> ' . htmlspecialchars($email_empresa) . '</p>' : '') . '
         </div>
         
-        <!-- Información del cliente -->
-        <div class="info">
-            <h3>Datos del Cliente</h3>
-            <p><strong>Cliente:</strong> ' . htmlspecialchars($factura['cliente']) . '</p>
-            <p><strong>N° de Envío:</strong> ' . htmlspecialchars($factura['numero_seguimiento'] ?? 'N/A') . '</p>
+        <!-- Información de la factura -->
+        <div class="invoice-info">
+            <h1 style="text-align: center; font-size: 18pt; margin: 20px 0;">FACTURA #' . htmlspecialchars($factura['numero_factura']) . '</h1>
+            <p style="text-align: center; margin: 5px 0;"><strong>Fecha de emisión:</strong> ' . date('d/m/Y', strtotime($factura['fecha_emision'])) . '</p>
+            <p style="text-align: center; margin: 5px 0;"><strong>Vencimiento:</strong> ' . ($factura['fecha_vencimiento'] ? date('d/m/Y', strtotime($factura['fecha_vencimiento'])) : 'No especificado') . '</p>
         </div>
+        
+        <!-- Información del cliente y envío -->
+        <table class="two-columns">
+            <tr>
+                <td style="width: 50%;">
+                    <div class="info-box">
+                        <h3>Datos del Cliente</h3>
+                        <p><strong>Nombre:</strong> ' . htmlspecialchars($cliente['cliente'] ?? $factura['cliente']) . '</p>
+                        ' . (isset($cliente['telefono']) && $cliente['telefono'] ? '<p><strong>Teléfono:</strong> ' . htmlspecialchars($cliente['telefono']) . '</p>' : '') . '
+                        ' . (isset($cliente['email']) && $cliente['email'] ? '<p><strong>Email:</strong> ' . htmlspecialchars($cliente['email']) . '</p>' : '') . '
+                    </div>
+                </td>
+                <td style="width: 50%;">
+                    <div class="info-box">
+                        <h3>Información del Envío</h3>
+                        <p><strong>N° de Seguimiento:</strong> ' . htmlspecialchars($factura['numero_seguimiento'] ?? 'N/A') . '</p>
+                    </div>
+                </td>
+            </tr>
+        </table>
         
         <!-- Detalles de la factura -->
-        <table>
+        <table class="items">
             <thead>
                 <tr>
                     <th>Descripción</th>
@@ -270,15 +313,26 @@ class FacturaController {
         </table>
         
         <!-- Totales -->
-        <div class="text-right">
-            <p><strong>Subtotal:</strong> $' . number_format($factura['subtotal'], 2) . '</p>
-            <p><strong>IVA (' . $factura['iva'] . '%):</strong> $' . number_format(($factura['total'] - $factura['subtotal']), 2) . '</p>
-            <p class="total"><strong>Total:</strong> $' . number_format($factura['total'], 2) . '</p>
+        <div class="totals">
+            <table>
+                <tr>
+                    <td><strong>Subtotal:</strong></td>
+                    <td class="text-right">$' . number_format($factura['subtotal'], 2) . '</td>
+                </tr>
+                <tr>
+                    <td><strong>IVA (' . $factura['iva'] . '%):</strong></td>
+                    <td class="text-right">$' . number_format(($factura['total'] - $factura['subtotal']), 2) . '</td>
+                </tr>
+                <tr class="total-row">
+                    <td><strong>Total:</strong></td>
+                    <td class="text-right"><strong>$' . number_format($factura['total'], 2) . '</strong></td>
+                </tr>
+            </table>
         </div>
         
         <!-- Pie de página -->
         <div class="footer">
-            <p>Gracias por su preferencia</p>
+            <p>Gracias por su preferencia - ' . htmlspecialchars($nombre_empresa) . '</p>
         </div>';
 
         // Escribir el contenido HTML
