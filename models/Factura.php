@@ -47,7 +47,8 @@ class Factura {
             foreach ($movimientos as $mov) {
                 $total_pagado += floatval($mov['monto']);
             }
-            $factura['saldo_pendiente'] = floatval($factura['total']) - $total_pagado;
+            $saldo = floatval($factura['total']) - $total_pagado;
+            $factura['saldo_pendiente'] = max(0, $saldo); // Asegurar que no sea negativo
             
             // Agregar los movimientos a la factura
             $factura['movimientos'] = $movimientos;

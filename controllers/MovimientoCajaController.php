@@ -49,14 +49,104 @@ class MovimientoCajaController {
     public function store() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id_factura = $_POST['id_factura'] ?? null;
-            $id_metodo_pago = $_POST['id_metodo_pago'] ?? null;
             $fecha_pago = $_POST['fecha_pago'] ?? date('Y-m-d H:i:s');
-            $monto = $_POST['monto'] ?? 0;
-            $observaciones = $_POST['observaciones'] ?? '';
+            
+            // Verificar si se están enviando múltiples métodos de pago (desde pago.php)
+            if (isset($_POST['id_metodo_pago']) && is_array($_POST['id_metodo_pago'])) {
+                // Obtener el saldo pendiente de la factura
+                require_once __DIR__ . '/../models/Factura.php';
+                $facturaModel = new Factura($this->db->getConnection());
+                $factura = $facturaModel->obtenerPorId($id_factura);
+                
+                if (!$factura) {
+                    header('Location: ?route=facturas&error=Factura no encontrada');
+                    exit;
+                }
+                
+                $saldo_pendiente = floatval($factura['saldo_pendiente'] ?? 0);
+                
+                // Procesar múltiples métodos de pago
+                $id_metodos_pago = $_POST['id_metodo_pago'] ?? [];
+                $montos_metodo = $_POST['monto_metodo'] ?? [];
+                $observaciones_metodo = $_POST['observaciones_metodo'] ?? [];
+                
+                $errores = [];
+                $exitosos = 0;
+                
+                // Validar que todos los arrays tengan la misma longitud
+                $total = count($id_metodos_pago);
+                if (count($montos_metodo) !== $total || count($observaciones_metodo) !== $total) {
+                    header('Location: ?route=facturas_pago&id_factura=' . $id_factura . '&error=Error en los datos enviados');
+                    exit;
+                }
+                
+                // Calcular el total a pagar antes de procesar
+                $total_a_pagar = 0;
+                $montos_validos = [];
+                
+                for ($i = 0; $i < $total; $i++) {
+                    $id_metodo_pago = $id_metodos_pago[$i] ?? null;
+                    $monto = floatval($montos_metodo[$i] ?? 0);
+                    
+                    // Validar que el método de pago y el monto sean válidos
+                    if (!empty($id_metodo_pago) && $monto > 0) {
+                        $total_a_pagar += $monto;
+                        $montos_validos[] = [
+                            'id_metodo_pago' => $id_metodo_pago,
+                            'monto' => $monto,
+                            'observaciones' => trim($observaciones_metodo[$i] ?? ''),
+                            'index' => $i
+                        ];
+                    }
+                }
+                
+                // Validar que el total no exceda el saldo pendiente
+                if ($total_a_pagar > $saldo_pendiente) {
+                    header('Location: ?route=facturas_pago&id_factura=' . $id_factura . '&error=' . urlencode('El total a pagar ($' . number_format($total_a_pagar, 2) . ') excede el saldo pendiente ($' . number_format($saldo_pendiente, 2) . ')'));
+                    exit;
+                }
+                
+                // Validar que haya al menos un monto válido
+                if (empty($montos_validos)) {
+                    header('Location: ?route=facturas_pago&id_factura=' . $id_factura . '&error=Debe ingresar al menos un monto válido mayor a 0');
+                    exit;
+                }
+                
+                // Procesar cada método de pago válido
+                foreach ($montos_validos as $item) {
+                    // Crear el movimiento de caja
+                    if ($this->movimientoCajaModel->crear($id_factura, $item['id_metodo_pago'], $fecha_pago, $item['monto'], $item['observaciones'])) {
+                        $exitosos++;
+                    } else {
+                        $errores[] = "Error al registrar el pago con método de pago #" . ($item['index'] + 1);
+                    }
+                }
+                
+                if ($exitosos > 0) {
+                    // Redirigir a la página de pago de la factura para ver el resultado
+                    if (count($errores) > 0) {
+                        header('Location: ?route=facturas_pago&id_factura=' . $id_factura . '&error=' . urlencode(implode(', ', $errores)));
+                    } else {
+                        header('Location: ?route=facturas_pago&id_factura=' . $id_factura . '&success=Pago registrado correctamente');
+                    }
+                    exit;
+                } else {
+                    header('Location: ?route=facturas_pago&id_factura=' . $id_factura . '&error=No se pudo registrar ningún pago');
+                    exit;
+                }
+            } else {
+                // Procesar un solo método de pago (desde form.php tradicional)
+                $id_metodo_pago = $_POST['id_metodo_pago'] ?? null;
+                $monto = floatval($_POST['monto'] ?? 0);
+                $observaciones = $_POST['observaciones'] ?? '';
 
-            if ($this->movimientoCajaModel->crear($id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones)) {
-                header('Location: ?route=facturas');
-                exit;
+                if ($this->movimientoCajaModel->crear($id_factura, $id_metodo_pago, $fecha_pago, $monto, $observaciones)) {
+                    header('Location: ?route=movimientos_caja');
+                    exit;
+                } else {
+                    header('Location: ?route=movimientos_caja&error=Error al registrar el movimiento');
+                    exit;
+                }
             }
         }
     }

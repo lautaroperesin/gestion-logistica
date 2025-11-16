@@ -137,11 +137,9 @@ require_once __DIR__ . '/../layouts/header.php';
                                             <i class="fas fa-money-bill-wave"></i>
                                         </a>
                                         <?php endif; ?>
-                                        <?php if ($estado == 1): // Mostrar botón de PDF solo para facturas emitidas ?>
                                         <a href="?route=facturas_export_pdf&id_factura=<?= $factura['id_factura'] ?>" class="btn btn-sm btn-secondary" title="Exportar a PDF" target="_blank">
                                             <i class="fas fa-file-pdf"></i>
                                         </a>
-                                        <?php endif; ?>
                                         <form action="?route=facturas_delete" method="POST" class="d-inline">
                                             <input type="hidden" name="id_factura" value="<?= $factura['id_factura'] ?>">
                                             <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar esta factura?')" title="Eliminar">
