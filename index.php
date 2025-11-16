@@ -1,5 +1,17 @@
 <?php
-session_start();
+$sessionPath = __DIR__ . '/sessions';
+
+if (!is_dir($sessionPath)) {
+    mkdir($sessionPath, 0777, true);
+}
+
+session_save_path($sessionPath);
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+//session_start();
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/controllers/UsuarioController.php';
 require_once __DIR__ . '/routes/web.php';
