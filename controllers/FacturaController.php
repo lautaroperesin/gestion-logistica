@@ -257,14 +257,6 @@ class FacturaController {
             .footer { margin-top: 30px; font-size: 8pt; text-align: center; color: #666; border-top: 1px solid #ddd; padding-top: 10px; }
         </style>
         
-        <!-- Encabezado de la empresa -->
-        <div class="header">
-            <div class="company-name">' . htmlspecialchars($nombre_empresa) . '</div>
-            ' . ($ubicacion_empresa ? '<p><strong>Dirección:</strong> ' . htmlspecialchars($ubicacion_empresa) . '</p>' : '') . '
-            ' . ($telefono_empresa ? '<p><strong>Teléfono:</strong> ' . htmlspecialchars($telefono_empresa) . '</p>' : '') . '
-            ' . ($email_empresa ? '<p><strong>Email:</strong> ' . htmlspecialchars($email_empresa) . '</p>' : '') . '
-        </div>
-        
         <!-- Información de la factura -->
         <div class="invoice-info">
             <h1 style="text-align: center; font-size: 18pt; margin: 20px 0;">FACTURA #' . htmlspecialchars($factura['numero_factura']) . '</h1>
@@ -332,7 +324,10 @@ class FacturaController {
         
         <!-- Pie de página -->
         <div class="footer">
-            <p>Gracias por su preferencia - ' . htmlspecialchars($nombre_empresa) . '</p>
+              <div class="company-name">' . htmlspecialchars($nombre_empresa) . '</div>
+            ' . ($ubicacion_empresa ? '<p><strong>Dirección:</strong> ' . htmlspecialchars($ubicacion_empresa) . '</p>' : '') . '
+            ' . ($telefono_empresa ? '<p><strong>Teléfono:</strong> ' . htmlspecialchars($telefono_empresa) . '</p>' : '') . '
+            ' . ($email_empresa ? '<p><strong>Email:</strong> ' . htmlspecialchars($email_empresa) . '</p>' : '') . '
         </div>';
 
         // Escribir el contenido HTML
